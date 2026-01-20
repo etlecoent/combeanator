@@ -1,0 +1,82 @@
+version: '3.8'
+
+services:
+  # Frontend - React + Vite
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: development
+    container_name: combeanator-frontend
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./frontend/.env
+    networks:
+      - combeanator-network
+    stdin_open: true
+    tty: true
+
+  # Backend - Express API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: development
+    container_name: combeanator-backend
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    ports:
+      - "5000:5000"
+    env_file:
+      - ./backend/.env
+    depends_on:
+      - postgres
+    networks:
+      - combeanator-network
+    stdin_open: true
+    tty: true
+
+  # PostgreSQL database
+  postgres:
+    image: postgres:16-alpine
+    container_name: combeanator-postgres
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=combeanator
+      - POSTGRES_PASSWORD=combeanator
+      - POSTGRES_DB=combeanator
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - combeanator-network
+
+  # MongoDB (optional - uncomment if needed)
+  # mongodb:
+  #   image: mongo:7-jammy
+  #   container_name: combeanator-mongodb
+  #   restart: unless-stopped
+  #   ports:
+  #     - "27017:27017"
+  #   environment:
+  #     - MONGO_INITDB_ROOT_USERNAME=combeanator
+  #     - MONGO_INITDB_ROOT_PASSWORD=combeanator
+  #     - MONGO_INITDB_DATABASE=combeanator
+  #   volumes:
+  #     - mongodb-data:/data/db
+  #   networks:
+  #     - combeanator-network
+
+volumes:
+  postgres-data:
+  # mongodb-data:
+
+networks:
+  combeanator-network:
+    driver: bridge
