@@ -1,6 +1,6 @@
 import pino from 'pino';
 
 export default pino({
-    name: 'express',
-    level: 'info'
+	name: 'express',
+	level: 'info',
 });
