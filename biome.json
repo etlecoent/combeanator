@@ -49,11 +49,13 @@
 			"dist",
 			"build",
 			"coverage",
+			".claude",
 			".next",
 			"out",
 			".cache",
 			".vite",
-			"*.log"
+			"*.log",
+			"tsconfig.*"
 		]
 	}
 }
