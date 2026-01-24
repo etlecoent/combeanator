@@ -13,11 +13,20 @@
 		"type-check": "tsc --noEmit",
 		"test": "vitest",
 		"test:ui": "vitest --ui",
-		"test:coverage": "vitest --coverage"
+		"test:coverage": "vitest --coverage",
+		"migrate:make": "kysely migrate make",
+		"migrate:up": "kysely migrate up",
+		"migrate:down": "kysely migrate down",
+		"migrate:latest": "kysely migrate latest",
+		"migrate:list": "kysely migrate list",
+		"seed:make": "kysely seed make",
+		"seed:run": "kysely seed run"
 	},
 	"dependencies": {
 		"express": "^5.2.1",
 		"helmet": "^8.1.0",
+		"kysely": "^0.28.10",
+		"pg": "^8.17.2",
 		"pino": "^10.2.1",
 		"pino-http": "^11.0.0",
 		"zod": "^3.25.76"
@@ -25,6 +34,8 @@
 	"devDependencies": {
 		"@types/express": "^5.0.6",
 		"@types/node": "^25.0.9",
+		"@types/pg": "^8.16.0",
+		"kysely-ctl": "^0.20.0",
 		"tsx": "^4.21.0"
 	}
 }

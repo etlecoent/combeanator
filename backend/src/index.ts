@@ -2,6 +2,7 @@ import express from 'express';
 import helmet from 'helmet';
 import { pinoHttp } from 'pino-http';
 
+import ENV from './config.js';
 import logger from './logger.js';
 import errorMiddleware from './middlewares/errorMiddleware.js';
 
@@ -34,6 +35,6 @@ app.use((_req, res, _next) => {
 app.use(errorMiddleware);
 
 // Start server
-app.listen(process.env.PORT, () => {
-	logger.info(`Server running on port ${process.env.PORT}`);
+app.listen(ENV.PORT, () => {
+	logger.info(`Server running on port ${ENV.PORT}`);
 });

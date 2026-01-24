@@ -22,7 +22,5 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci --only=production
 COPY --from=builder /app/dist ./dist
-# Copy Prisma schema (uncomment if using Prisma)
-# COPY --from=builder /app/prisma ./prisma
 EXPOSE 5000
 CMD ["npm", "start"]
