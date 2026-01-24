@@ -10,11 +10,9 @@ export async function up(db: Kysely<any>): Promise<void> {
 		.addColumn('first_name', 'varchar(255)', (col) => col.notNull())
 		.addColumn('last_name', 'varchar(255)')
 		.addColumn('gender', 'varchar(10)', (col) =>
-			col.notNull().check(sql`gender IN ('man', 'woman', 'other')`),
+			col.notNull().check(sql`gender IN ('man', 'woman', 'other')`)
 		)
-		.addColumn('created_at', 'timestamp', (col) =>
-			col.defaultTo(sql`CURRENT_TIMESTAMP`).notNull(),
-		)
+		.addColumn('created_at', 'timestamp', (col) => col.defaultTo(sql`CURRENT_TIMESTAMP`).notNull())
 		.execute();
 }
 

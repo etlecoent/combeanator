@@ -55,7 +55,8 @@
 			".cache",
 			".vite",
 			"*.log",
-			"tsconfig.*"
+			"tsconfig.*",
+			"**/routeTree.gen.ts"
 		]
 	}
 }
