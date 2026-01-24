@@ -14,9 +14,9 @@ Full-stack monorepo using NPM Workspaces with React frontend, Express backend, a
 - **Database**: PostgreSQL 16 (port 5432)
 
 ### Key Technologies
-- **Frontend**: React 19, TypeScript, Vite, Tailwind CSS, TanStack Router (file-based), TanStack Query, Axios, Zod, Vercel AI SDK
-- **Backend**: Express 5, TypeScript, Pino (logging), Helmet (security), Zod (validation), Kysely (SQL query builder), Vercel AI SDK
-- **Testing**: Vitest + React Testing Library (unit/integration), Playwright (E2E), Supertest (API), MSW (mocking)
+- **Frontend**: React 19, TypeScript, Vite, Tailwind CSS, TanStack Router (file-based), TanStack Query, Axios, Zod
+- **Backend**: Express 5, TypeScript, Pino (logging), Helmet (security), Zod (validation), Kysely (SQL query builder)
+- **Testing**: Vitest
 - **Tooling**: Biome (formatting/linting), Docker + Docker Compose
 - **Infrastructure**: AWS Elastic Beanstalk (hosting), AWS Bedrock (AI services)
 
@@ -92,21 +92,19 @@ npm test                 # Run tests
 
 ### Frontend-Specific
 ```bash
-# Run inside container
-docker-compose exec frontend npm test
-
-# Or run locally (if Node installed)
+# Run locally (if Node installed)
 cd frontend
 npm run dev              # Vite dev server (hot reload)
 npm run build            # Build for production
 npm run preview          # Preview production build
+# Note: Frontend testing not yet configured
 ```
 
 ## Code Quality & Standards
 
 **Biome Configuration** (biome.json):
 - Line width: 100 characters
-- Single quotes, 2-space indentation
+- Single quotes, tab indentation
 - Strict: no unused variables/imports, prefer const
 - Warns on console.log and explicit `any` types
 - Run `npm run lint:fix` before committing
@@ -167,18 +165,21 @@ await db.transaction().execute(async (trx) => {
 });
 ```
 
+**Database Seeding**:
+```bash
+npm run seed:make -- seed_name   # Create a new seed file
+npm run seed:run                 # Run all seeds
+```
+
 ## Testing Strategy
 
-- **Unit/Integration**: Vitest for backend logic, React Testing Library for components
-- **E2E**: Playwright for full user flows (not yet implemented)
-- **API**: Supertest for Express endpoints
-- **Mocking**: MSW for HTTP mocking in tests
+- **Unit**: Vitest for backend logic
 
 **Test Commands**:
 ```bash
-npm test                 # All tests in all workspaces
-npm run test:ui          # Vitest UI (backend only)
-npm run test:coverage    # Coverage reports
+npm test                         # Run tests in all workspaces (currently backend only)
+cd backend && npm run test:ui    # Vitest UI
+cd backend && npm run test:coverage    # Coverage reports
 ```
 
 ## Logging
@@ -191,9 +192,7 @@ Backend uses **Pino** for structured JSON logging:
 
 ## AI Integration
 
-- **Provider**: AWS Bedrock (configured but not yet implemented)
-- **Streaming**: Vercel AI SDK on both frontend and backend
-- **Configuration**: AWS credentials in `backend/.env` (AWS_REGION, AWS_ACCESS_KEY_ID, etc.)
+- **Provider**: AWS Bedrock (not yet implemented)
 - Handle AI service failures gracefully with proper error handling
 
 ## Deployment
@@ -219,7 +218,7 @@ docker build --target production -t combeanator-backend:latest ./backend
 - **Backend Entry**: `backend/src/index.ts` (Express app setup)
 - **Backend Logger**: `backend/src/logger.ts` (Pino configuration)
 - **Docker Configs**: Root `docker-compose.yml` + `frontend/Dockerfile` + `backend/Dockerfile`
-- **Environment Examples**: `frontend/.env.example`, `backend/.env.example`
+- **Environment Examples**: `frontend/example.env`, `backend/example.env`
 - **Workspace Root**: `package.json` (defines workspaces and root scripts)
 
 ## Middleware Stack (Backend)
@@ -234,6 +233,6 @@ Order matters - current setup:
 
 ## Node.js Version
 
-- **Version**: 24.13.0 (specified in `.nvmrc`)
-- **Rationale**: Latest LTS with full ES module support
+- **Version**: 25.4.0 (specified in `.nvmrc`)
+- **Rationale**: Latest version with full ES module support
 - Use `nvm use` to switch to correct version locally
