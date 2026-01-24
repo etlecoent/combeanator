@@ -20,8 +20,13 @@ cd combeanator
 nvm use
 
 # Create environment files
+cp .env.example .env
 cp frontend/.env.example frontend/.env
 cp backend/.env.example backend/.env
+
+# Set your user ID in .env to prevent root ownership in Docker
+sed -i "s/UID=1000/UID=$(id -u)/" .env
+sed -i "s/GID=1000/GID=$(id -g)/" .env
 ```
 
 ### 2. Choose Your Development Method
@@ -109,7 +114,7 @@ docker-compose logs -f frontend         # Frontend only
 
 # Execute commands in containers
 docker-compose exec backend npm install <package>
-docker-compose exec backend npx prisma studio
+docker-compose exec backend npm run migrate:latest
 docker-compose exec frontend npm test
 
 # Stop and cleanup
@@ -120,18 +125,26 @@ docker-compose down -v                  # Stop and remove volumes (resets databa
 ### Database Management
 
 ```bash
-# Run Prisma migrations
-docker-compose exec backend npx prisma migrate dev --name describe_change
+# Create a new migration
+docker-compose exec backend npm run migrate:create -- migration_name
 
-# Generate Prisma client
-docker-compose exec backend npx prisma generate
+# Run all pending migrations
+docker-compose exec backend npm run migrate:latest
 
-# Open Prisma Studio (database GUI)
-docker-compose exec backend npx prisma studio
+# Run one migration up
+docker-compose exec backend npm run migrate:up
 
-# Reset database
-docker-compose exec backend npx prisma migrate reset
+# Rollback one migration
+docker-compose exec backend npm run migrate:down
+
+# List all migrations
+docker-compose exec backend npm run migrate:list
+
+# Access PostgreSQL CLI directly
+docker-compose exec postgres psql -U combeanator -d combeanator
 ```
+
+**Kysely Documentation**: For detailed Kysely usage, see https://kysely.dev/llms-full.txt
 
 ## Project Structure
 
@@ -148,8 +161,15 @@ combeanator/
 │
 ├── backend/                   # Express 5 + TypeScript API
 │   ├── src/
+│   │   ├── db/               # Database configuration
+│   │   │   ├── connection.ts # Kysely instance
+│   │   │   ├── interface.ts  # Database dialect
+│   │   │   ├── types/        # Database type definitions
+│   │   │   └── migrations/   # SQL migrations
 │   │   ├── index.ts          # Express app entry
+│   │   ├── config.ts         # Environment variables (Zod)
 │   │   └── logger.ts         # Pino logger config
+│   ├── kysely.config.ts      # Kysely migration config
 │   ├── Dockerfile            # Multi-stage build (dev + production)
 │   ├── package.json
 │   └── .env.example
@@ -176,13 +196,15 @@ combeanator/
 - **Logging**: Pino + pino-http (structured JSON)
 - **Security**: Helmet (HTTP headers)
 - **Validation**: Zod
-- **ORM**: Prisma
+- **Query Builder**: Kysely (type-safe SQL)
+- **Migrations**: kysely-ctl
 - **AI**: Vercel AI SDK
 - **Process Manager**: tsx (hot reload)
 
 ### Database
 - **Primary**: PostgreSQL 16
-- **ORM**: Prisma (migrations, type-safe queries)
+- **Query Builder**: Kysely (type-safe SQL queries)
+- **Migrations**: kysely-ctl for schema management
 - **Dev Credentials**: `combeanator` / `combeanator`
 
 ### Testing
@@ -218,12 +240,12 @@ PORT=5000
 LOG_LEVEL=info
 
 # Database (use 'postgres' as host in Docker, 'localhost' for local)
-DATABASE_URL=postgresql://combeanator:combeanator@postgres:5432/combeanator
 POSTGRES_HOST=postgres
 POSTGRES_PORT=5432
 POSTGRES_USER=combeanator
 POSTGRES_PASSWORD=combeanator
 POSTGRES_DB=combeanator
+POSTGRES_SCHEMA=public
 
 # JWT (when authentication is implemented)
 JWT_SECRET=your-secret-key-here-change-in-production
@@ -285,15 +307,22 @@ docker-compose logs -f
 ```
 
 ### Permission Issues
-If you get permission errors with `node_modules`:
+If you get permission errors or files are owned by root:
 ```bash
-# Fix ownership
-sudo chown -R $USER:$USER frontend/ backend/
+# Ensure UID/GID is set in root .env file
+id -u  # Your user ID
+id -g  # Your group ID
+# Add these values to .env file
 
-# Clean rebuild
+# Fix ownership of existing files
+sudo chown -R $USER:$USER .
+
+# Rebuild containers with correct user
 docker-compose down -v
 docker-compose up --build -d
 ```
+
+**Note:** The `UID` and `GID` variables in `.env` ensure Docker runs containers as your user, preventing root-owned files.
 
 ### Database Connection Issues
 ```bash
@@ -331,8 +360,8 @@ docker-compose up -d
 
 ## Documentation
 
-- **[CLAUDE.md](./CLAUDE.md)** - Detailed development guide for AI assistants
-- **[DOCKER.md](./DOCKER.md)** - Docker usage and troubleshooting (if exists)
+- **[CLAUDE.md](./.claude/CLAUDE.md)** - Detailed development guide for AI assistants
+- **[DOCKER.md](./DOCKER.md)** - Docker usage and troubleshooting
 - **[_planning/](./\_planning/)** - Architecture decisions and planning docs
 
 ## Contributing

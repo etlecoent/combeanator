@@ -26,7 +26,7 @@
 
 ### Database
 
-- **Primary Database**: PostgreSQL with Prisma for ORM & migrations
+- **Primary Database**: PostgreSQL with Kysely for type-safe SQL queries
 - **Optional NoSQL**: MongoDB (if needed for specific use cases)
 
 ### Testing

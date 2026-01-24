@@ -15,7 +15,7 @@ Full-stack monorepo using NPM Workspaces with React frontend, Express backend, a
 
 ### Key Technologies
 - **Frontend**: React 19, TypeScript, Vite, Tailwind CSS, TanStack Router (file-based), TanStack Query, Axios, Zod, Vercel AI SDK
-- **Backend**: Express 5, TypeScript, Pino (logging), Helmet (security), Zod (validation), Prisma ORM, Vercel AI SDK
+- **Backend**: Express 5, TypeScript, Pino (logging), Helmet (security), Zod (validation), Kysely (SQL query builder), Vercel AI SDK
 - **Testing**: Vitest + React Testing Library (unit/integration), Playwright (E2E), Supertest (API), MSW (mocking)
 - **Tooling**: Biome (formatting/linting), Docker + Docker Compose
 - **Infrastructure**: AWS Elastic Beanstalk (hosting), AWS Bedrock (AI services)
@@ -81,11 +81,6 @@ docker-compose down -v
 
 ### Backend-Specific
 ```bash
-# Run inside container
-docker-compose exec backend npx prisma migrate dev
-docker-compose exec backend npx prisma generate
-docker-compose exec backend npx prisma studio
-
 # Or run locally (if Node installed)
 cd backend
 npm run dev              # tsx watch (hot reload)
@@ -121,24 +116,55 @@ npm run preview          # Preview production build
 - Frontend uses standard React + Vite TypeScript setup
 - Both enforce strict type checking
 
-## Database & Prisma
+## Database & Kysely
 
 - **Primary Database**: PostgreSQL 16
-- **ORM**: Prisma for schema, migrations, and type-safe queries
+- **Query Builder**: Kysely for type-safe SQL queries
 - **Dev Credentials**: `combeanator` / `combeanator` (see `backend/.env`)
 - **Docker Service**: `postgres` (accessible via `postgres:5432` inside Docker network)
 
-**Common Prisma Workflows**:
-```bash
-# After schema changes
-docker-compose exec backend npx prisma migrate dev --name describe_change
-docker-compose exec backend npx prisma generate
+**Kysely Documentation**: https://kysely.dev/llms-full.txt
 
-# Database GUI
-docker-compose exec backend npx prisma studio
+**Key Kysely Features**:
+- Type-safe SQL query builder with full TypeScript support
+- Works directly with SQL migrations (no code generation needed)
+- Automatic type inference from database schema
+- Supports transactions, CTEs, and complex queries
+- Lightweight and focused on SQL rather than ORM patterns
 
-# Reset database
-docker-compose exec backend npx prisma migrate reset
+**Common Kysely Patterns**:
+```typescript
+// Simple select
+const users = await db.selectFrom('users').selectAll().execute();
+
+// With where clause
+const user = await db
+  .selectFrom('users')
+  .where('id', '=', userId)
+  .selectAll()
+  .executeTakeFirst();
+
+// Insert
+await db
+  .insertInto('users')
+  .values({ name: 'John', email: 'john@example.com' })
+  .execute();
+
+// Update
+await db
+  .updateTable('users')
+  .set({ name: 'Jane' })
+  .where('id', '=', userId)
+  .execute();
+
+// Delete
+await db.deleteFrom('users').where('id', '=', userId).execute();
+
+// Transactions
+await db.transaction().execute(async (trx) => {
+  await trx.insertInto('users').values({ name: 'Alice' }).execute();
+  await trx.insertInto('profiles').values({ userId: 1 }).execute();
+});
 ```
 
 ## Testing Strategy
