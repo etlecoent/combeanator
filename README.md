@@ -20,9 +20,9 @@ cd combeanator
 nvm use
 
 # Create environment files
-cp .env.example .env
-cp frontend/.env.example frontend/.env
-cp backend/.env.example backend/.env
+cp example.env .env
+cp frontend/example.env frontend/.env
+cp backend/example.env backend/.env
 
 # Set your user ID in .env to prevent root ownership in Docker
 sed -i "s/UID=1000/UID=$(id -u)/" .env
@@ -140,6 +140,12 @@ docker-compose exec backend npm run migrate:down
 # List all migrations
 docker-compose exec backend npm run migrate:list
 
+# Create a new seed
+docker-compose exec backend npm run seed:make -- seed_name
+
+# Run all seeds
+docker-compose exec backend npm run seed:run
+
 # Access PostgreSQL CLI directly
 docker-compose exec postgres psql -U combeanator -d combeanator
 ```
@@ -157,7 +163,7 @@ combeanator/
 │   │   └── routeTree.gen.ts  # Auto-generated (do not edit)
 │   ├── Dockerfile            # Multi-stage build (dev + production)
 │   ├── package.json
-│   └── .env.example
+│   └── example.env
 │
 ├── backend/                   # Express 5 + TypeScript API
 │   ├── src/
@@ -172,7 +178,7 @@ combeanator/
 │   ├── kysely.config.ts      # Kysely migration config
 │   ├── Dockerfile            # Multi-stage build (dev + production)
 │   ├── package.json
-│   └── .env.example
+│   └── example.env
 │
 ├── docker-compose.yml         # Local development services
 ├── biome.json                 # Code formatting & linting
@@ -361,7 +367,6 @@ docker-compose up -d
 ## Documentation
 
 - **[CLAUDE.md](./.claude/CLAUDE.md)** - Detailed development guide for AI assistants
-- **[DOCKER.md](./DOCKER.md)** - Docker usage and troubleshooting
 - **[_planning/](./\_planning/)** - Architecture decisions and planning docs
 
 ## Contributing
