@@ -25,6 +25,7 @@ services:
       dockerfile: Dockerfile
       target: development
     container_name: combeanator-backend
+    user: "${UID:-1000}:${GID:-1000}"
     volumes:
       - ./backend:/app
       - /app/node_modules
