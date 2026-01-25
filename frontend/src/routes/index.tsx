@@ -1,11 +1,12 @@
 import { Button } from '@/components/ui/button';
 import { createFileRoute } from '@tanstack/react-router';
+import type React from 'react';
 
 export const Route = createFileRoute('/')({
 	component: Index,
 });
 
-function Index() {
+function Index(): React.ReactElement {
 	return (
 		<div className="container mx-auto p-8 max-w-4xl">
 			<div className="space-y-8">
