@@ -27,14 +27,13 @@ function applyTheme(theme: Theme) {
 	}
 }
 
-export function useTheme() {
-	const [theme, setThemeState] = useState<Theme>(() => {
-		const stored = getStoredTheme();
-		applyTheme(stored);
-		return stored;
-	});
+export function useTheme(): { theme: Theme; setTheme: (newTheme: Theme) => void } {
+	// Use an initializer function to avoid getting stored theme on every rerender
+	const [theme, setThemeState] = useState<Theme>(getStoredTheme);
 
 	useEffect(() => {
+		applyTheme(theme);
+
 		const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 
 		const handleSystemThemeChange = () => {
