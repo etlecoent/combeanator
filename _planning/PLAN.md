@@ -31,8 +31,8 @@ Build in phases using an **incremental vertical slice approach**. This gets you 
    - Health check endpoint
    - Development hot-reload
 
-5. **Prisma & Database**
-   - Initialize Prisma
+5. **Kysely & Database**
+   - Initialize Kysely
    - Create initial schema (User model)
    - Run first migration
    - Seed script for development data
