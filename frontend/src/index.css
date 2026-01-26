@@ -134,3 +134,23 @@
 		@apply bg-background text-foreground;
 	}
 }
+
+@theme {
+	--animate-fall-slower: fall 8s linear infinite;
+	--animate-fall-slow: fall 6s linear infinite;
+	--animate-fall-fast: fall 6s linear infinite;
+	--animate-fall-faster: fall 5s linear infinite;
+
+	@keyframes fall {
+		0% {
+			top: -20%;
+			transform: rotate(0deg);
+			opacity: 1;
+		}
+		100% {
+			top: 100%;
+			transform: rotate(360deg);
+			opacity: 0.05;
+		}
+	}
+}
