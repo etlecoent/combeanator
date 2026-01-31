@@ -1,13 +1,13 @@
 import { useNavigate } from '@tanstack/react-router';
 import { Coffee } from 'lucide-react';
 import type React from 'react';
-import { SearchBar } from './SearchBar.js';
+import { SearchBar } from '../SearchBar.js';
 
 function HeroSection(): React.ReactElement {
 	const navigate = useNavigate();
 	const handleSearch = (query: string) => {
 		navigate({
-			to: '/search',
+			to: '/coffees',
 			search: { q: query },
 		});
 	};
@@ -35,29 +35,18 @@ function HeroSection(): React.ReactElement {
 
 					<div className="flex flex-wrap justify-center gap-2 text-sm text-muted-foreground">
 						<span>Try:</span>
-						<button
-							type="button"
-							className="text-primary hover:underline"
-							onClick={() => handleSearch('Ethiopian')}
-						>
-							Ethiopian
-						</button>
-						<span>•</span>
-						<button
-							type="button"
-							className="text-primary hover:underline"
-							onClick={() => handleSearch('light roast')}
-						>
-							light roast
-						</button>
-						<span>•</span>
-						<button
-							type="button"
-							className="text-primary hover:underline"
-							onClick={() => handleSearch('fruity notes')}
-						>
-							fruity notes
-						</button>
+						{['Robusta', 'light roast', 'fruity notes'].map((suggestion) => {
+							return (
+								<button
+									key={suggestion}
+									type="button"
+									className="text-primary hover:underline"
+									onClick={() => handleSearch(suggestion)}
+								>
+									{suggestion}
+								</button>
+							);
+						})}
 					</div>
 				</div>
 			</div>
