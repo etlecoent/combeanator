@@ -1,17 +1,17 @@
 import express from 'express';
 import helmet from 'helmet';
-
+// routers
+import coffeesRouter from './api/coffees/coffeesRouter.js';
+import healthRouter from './api/health/healthRouter.js';
+import usersRouter from './api/users/usersRouter.js';
+// utils
 import ENV from './config.js';
 import { db } from './db/connection.js';
 import logger from './shared/logger.js';
-
+// middlewares
 import errorMiddleware from './shared/middlewares/errorMiddleware.js';
-
-import coffeesRouter from './coffees/coffeesRouter.js';
-import healthRouter from './health/healthRouter.js';
-import notFoundMiddleWare from './shared/middlewares/notFoundMiddleware.js';
-import usersRouter from './users/usersRouter.js';
 import loggerMiddleware from './shared/middlewares/loggerMiddleware.js';
+import notFoundMiddleWare from './shared/middlewares/notFoundMiddleware.js';
 
 const app = express();
 
@@ -19,9 +19,9 @@ const app = express();
 app.disable('x-powered-by');
 
 // Middlewares
-app.use(loggerMiddleware);
 app.use(helmet());
 app.use(express.json());
+app.use(loggerMiddleware);
 
 app.use('/health', healthRouter);
 app.use('/users', usersRouter);

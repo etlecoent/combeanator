@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from 'express';
 import { Router } from 'express';
-import { db } from '../db/connection.js';
+import { db } from '../../db/connection.js';
 
 const coffeesRouter = Router();
 
