@@ -20,6 +20,7 @@
 		"seed:run": "kysely seed run"
 	},
 	"dependencies": {
+		"cors": "^2.8.6",
 		"express": "^5.2.1",
 		"helmet": "^8.1.0",
 		"kysely": "^0.28.10",
@@ -29,6 +30,7 @@
 		"zod": "^3.25.76"
 	},
 	"devDependencies": {
+		"@types/cors": "^2.8.19",
 		"@types/express": "^5.0.6",
 		"@types/node": "^25.0.9",
 		"@types/pg": "^8.16.0",
