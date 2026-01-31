@@ -1,10 +1,17 @@
 import express from 'express';
 import helmet from 'helmet';
-import { pinoHttp } from 'pino-http';
 
 import ENV from './config.js';
-import logger from './logger.js';
-import errorMiddleware from './middlewares/errorMiddleware.js';
+import { db } from './db/connection.js';
+import logger from './shared/logger.js';
+
+import errorMiddleware from './shared/middlewares/errorMiddleware.js';
+
+import coffeesRouter from './coffees/coffeesRouter.js';
+import healthRouter from './health/healthRouter.js';
+import notFoundMiddleWare from './shared/middlewares/notFoundMiddleware.js';
+import usersRouter from './users/usersRouter.js';
+import loggerMiddleware from './shared/middlewares/loggerMiddleware.js';
 
 const app = express();
 
@@ -12,29 +19,48 @@ const app = express();
 app.disable('x-powered-by');
 
 // Middlewares
-app.use(pinoHttp({ logger }));
+app.use(loggerMiddleware);
 app.use(helmet());
 app.use(express.json());
 
-// Health check endpoint
-app.get('/health', (_req, res, _next) => {
-	res.status(200).json({
-		message: 'ok',
-		timestamp: new Date().toISOString(),
-		uptime: process.uptime(),
-	});
-});
+app.use('/health', healthRouter);
+app.use('/users', usersRouter);
+app.use('/coffees', coffeesRouter);
 
-app.use((_req, res, _next) => {
-	res.status(404).json({
-		message: "Sorry can't find that!",
-	});
-});
+// Not found middleware
+app.use(notFoundMiddleWare);
 
-// custom error handler
+// Error Middleware needs to be last
 app.use(errorMiddleware);
 
 // Start server
-app.listen(ENV.PORT, () => {
+const server = app.listen(ENV.PORT, () => {
 	logger.info(`Server running on port ${ENV.PORT}`);
 });
+
+const shutdown = async (signal: string) => {
+	logger.info(`${signal} signal received: closing HTTP server`);
+
+	server.close(async () => {
+		logger.info('HTTP server closed');
+
+		try {
+			await db.destroy();
+			logger.info('Database connection closed');
+			process.exit(0);
+		} catch (err) {
+			logger.error(err, 'Error closing database connection');
+			process.exit(1);
+		}
+	});
+
+	// Force shutdown after 60 seconds
+	setTimeout(() => {
+		logger.error('Forced shutdown after timeout');
+		process.exit(1);
+	}, 60000);
+};
+
+// Graceful shutdowns
+process.on('SIGTERM', () => shutdown('SIGTERM'));
+process.on('SIGINT', () => shutdown('SIGINT'));
