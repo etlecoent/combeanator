@@ -1,14 +1,12 @@
 import express from 'express';
 import helmet from 'helmet';
-// routers
-import coffeesRouter from './api/coffees/coffeesRouter.js';
-import healthRouter from './api/health/healthRouter.js';
-import usersRouter from './api/users/usersRouter.js';
-// utils
+// Routers
+import apiRouter from './api/apiRouter.js';
+// Utils
 import ENV from './config.js';
 import { db } from './db/connection.js';
 import logger from './shared/logger.js';
-// middlewares
+// Middlewares
 import errorMiddleware from './shared/middlewares/errorMiddleware.js';
 import loggerMiddleware from './shared/middlewares/loggerMiddleware.js';
 import notFoundMiddleWare from './shared/middlewares/notFoundMiddleware.js';
@@ -23,9 +21,7 @@ app.use(helmet());
 app.use(express.json());
 app.use(loggerMiddleware);
 
-app.use('/health', healthRouter);
-app.use('/users', usersRouter);
-app.use('/coffees', coffeesRouter);
+app.use('/api', apiRouter);
 
 // Not found middleware
 app.use(notFoundMiddleWare);

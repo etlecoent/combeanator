@@ -2,7 +2,7 @@ import type { NextFunction, Request, Response } from 'express';
 import { Router } from 'express';
 import { db } from '../../db/connection.js';
 
-const usersRouter = Router();
+const usersRouter: Router = Router();
 
 usersRouter.get('/', async (_req: Request, res: Response, next: NextFunction) => {
 	try {
