@@ -1,6 +1,16 @@
 import { Coffee as CoffeeIcon } from 'lucide-react';
 import type React from 'react';
+import {
+	Card,
+	CardAction,
+	CardContent,
+	CardDescription,
+	CardFooter,
+	CardHeader,
+	CardTitle,
+} from '@/components/ui/card';
 import type { Coffee } from '@/types/coffee';
+import { Button } from './ui/button';
 
 interface CoffeeCardProps {
 	coffee: Coffee;
@@ -8,13 +18,18 @@ interface CoffeeCardProps {
 
 export function CoffeeCard({ coffee }: CoffeeCardProps): React.ReactElement {
 	return (
-		<article className="rounded-lg border bg-card p-6 shadow-sm hover:shadow-md transition-shadow">
-			<div className="flex items-center gap-4">
-				<div className="rounded-full bg-primary/10 p-3">
+		<Card className="w-full max-w-sm">
+			<CardHeader>
+				<CardTitle>{coffee.name}</CardTitle>
+				<CardDescription>Lorem Ipsum</CardDescription>
+				<CardAction className="rounded-full bg-primary/10">
 					<CoffeeIcon className="size-6 text-primary" />
-				</div>
-				<h3 className="font-semibold text-lg">{coffee.name}</h3>
-			</div>
-		</article>
+				</CardAction>
+				<CardContent>Lorem Ipsum</CardContent>
+				<CardFooter>
+					<Button>Learn More</Button>
+				</CardFooter>
+			</CardHeader>
+		</Card>
 	);
 }
