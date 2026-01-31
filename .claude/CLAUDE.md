@@ -37,6 +37,25 @@ Full-stack monorepo using NPM Workspaces with React frontend, Express backend, a
 - Each workspace has its own `.env` file (loaded by docker-compose via `env_file`)
 - Production uses AWS EB environment properties, not `.env` files
 
+**Backend Project Structure** (Hybrid Convention): The backend follows a hybrid structure combining feature-based organization with shared utilities:
+```
+backend/src/
+  users/              # Feature folder - all user-related code
+    usersRouter.ts
+    usersController.ts
+    usersService.ts
+  products/           # Feature folder - all product-related code
+    productsRouter.ts
+    ...
+  shared/             # Shared utilities and cross-cutting concerns
+    middlewares/
+    utils/
+  db/                 # Database configuration and types
+  index.ts            # Application entry point
+```
+- Related code for each feature stays together (routes, controllers, services)
+- Shared code (middlewares, utilities, database) in dedicated folders
+
 ## Development Commands
 
 ### Root-Level (runs in all workspaces)
