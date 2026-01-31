@@ -6,11 +6,12 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
 interface SearchBarProps {
+	initialQuery?: string;
 	onSearch: (query: string) => void;
 }
 
-function SearchBar({ onSearch }: SearchBarProps): React.ReactElement {
-	const [query, setQuery] = useState('');
+function SearchBar({ initialQuery, onSearch }: SearchBarProps): React.ReactElement {
+	const [query, setQuery] = useState(initialQuery || '');
 
 	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();

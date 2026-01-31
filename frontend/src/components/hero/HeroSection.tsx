@@ -1,11 +1,15 @@
+import { useNavigate } from '@tanstack/react-router';
 import { Coffee } from 'lucide-react';
 import type React from 'react';
-
 import { SearchBar } from './SearchBar.js';
 
 function HeroSection(): React.ReactElement {
-	const handleSearch = (_query: string) => {
-		// TODO: Implement backend fetching
+	const navigate = useNavigate();
+	const handleSearch = (query: string) => {
+		navigate({
+			to: '/search',
+			search: { q: query },
+		});
 	};
 
 	return (
