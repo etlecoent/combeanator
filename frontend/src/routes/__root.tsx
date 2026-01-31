@@ -5,12 +5,15 @@ import { NavBar } from '@/components/NavBar';
 
 const RootLayout = () => (
 	<>
-		<NavBar />
-		<main>
-			<Outlet />
-		</main>
+		<div className="min-h-screen flex flex-col">
+			<NavBar />
+			<main className="flex-1">
+				<Outlet />
+			</main>
+
+			<TanStackRouterDevtools />
+		</div>
 		<Footer />
-		<TanStackRouterDevtools />
 	</>
 );
 
