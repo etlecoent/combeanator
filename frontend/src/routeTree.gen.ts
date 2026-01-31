@@ -9,13 +9,13 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SearchRouteImport } from './routes/search'
+import { Route as CoffeesRouteImport } from './routes/coffees'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 
-const SearchRoute = SearchRouteImport.update({
-  id: '/search',
-  path: '/search',
+const CoffeesRoute = CoffeesRouteImport.update({
+  id: '/coffees',
+  path: '/coffees',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -32,40 +32,40 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/search': typeof SearchRoute
+  '/coffees': typeof CoffeesRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/search': typeof SearchRoute
+  '/coffees': typeof CoffeesRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/search': typeof SearchRoute
+  '/coffees': typeof CoffeesRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/search'
+  fullPaths: '/' | '/about' | '/coffees'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/search'
-  id: '__root__' | '/' | '/about' | '/search'
+  to: '/' | '/about' | '/coffees'
+  id: '__root__' | '/' | '/about' | '/coffees'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
-  SearchRoute: typeof SearchRoute
+  CoffeesRoute: typeof CoffeesRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/search': {
-      id: '/search'
-      path: '/search'
-      fullPath: '/search'
-      preLoaderRoute: typeof SearchRouteImport
+    '/coffees': {
+      id: '/coffees'
+      path: '/coffees'
+      fullPath: '/coffees'
+      preLoaderRoute: typeof CoffeesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -88,7 +88,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
-  SearchRoute: SearchRoute,
+  CoffeesRoute: CoffeesRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

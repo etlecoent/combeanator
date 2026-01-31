@@ -15,6 +15,7 @@ export function NavBar(): React.ReactElement {
 
 				<div className="flex items-center gap-1">
 					<NavLink to="/">Home</NavLink>
+					<NavLink to="/coffees">Coffees</NavLink>
 					<NavLink to="/about">About</NavLink>
 				</div>
 
