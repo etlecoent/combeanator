@@ -1,7 +1,7 @@
 // Generate a a zod validation against the env
 import { z } from 'zod';
 
-const Env = z.object({
+const envSchema = z.object({
 	// Server Configuration
 	NODE_ENV: z.enum(['development', 'production', 'test']),
 	PORT: z.coerce.number().positive().int(),
@@ -18,7 +18,7 @@ const Env = z.object({
 	CORS_ORIGIN: z.string().url(),
 });
 
-const ENV = Env.parse(process.env);
+const ENV = envSchema.parse(process.env);
 
-export type Env = z.infer<typeof Env>;
+export type Env = z.infer<typeof envSchema>;
 export default ENV;
