@@ -15,7 +15,10 @@ export function Footer(): React.ReactElement {
 					</div>
 
 					<nav className="flex items-center gap-4 text-sm" aria-label="Footer navigation">
-						<Link to="/about" className="text-muted-foreground transition-colors hover:text-foreground">
+						<Link
+							to="/about"
+							className="text-muted-foreground transition-colors hover:text-foreground"
+						>
 							About
 						</Link>
 					</nav>

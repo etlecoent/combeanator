@@ -1,6 +1,6 @@
-import { cn } from '@/lib/utils';
 import { Link } from '@tanstack/react-router';
 import type React from 'react';
+import { cn } from '@/lib/utils';
 
 interface NavLinkProps {
 	to: string;

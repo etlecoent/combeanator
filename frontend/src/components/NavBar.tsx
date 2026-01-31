@@ -1,8 +1,8 @@
-import { NavLink } from '@/components/NavLink';
-import { ThemeToggle } from '@/components/ThemeToggle';
 import { Link } from '@tanstack/react-router';
 import { Coffee } from 'lucide-react';
 import type React from 'react';
+import { NavLink } from '@/components/NavLink';
+import { ThemeToggle } from '@/components/ThemeToggle';
 
 export function NavBar(): React.ReactElement {
 	return (
