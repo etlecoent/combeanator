@@ -2,7 +2,7 @@ import type { NextFunction, Request } from 'express';
 import { Router } from 'express';
 import { z } from 'zod';
 import { db } from '../../db/connection.js';
-import { NotFoundError } from '../../shared/errors/AppError.js';
+import { ConflictError, NotFoundError } from '../../shared/errors/AppError.js';
 import {
 	type ValidatedResponseLocals,
 	validateBody,
@@ -59,12 +59,21 @@ coffeesRouter.post(
 		next: NextFunction
 	) => {
 		try {
-			const payload = res.locals.body;
+			const { name } = res.locals.body;
+
+			// Validate duplicates
+			const existingCoffees = await db
+				.selectFrom('coffees')
+				.selectAll()
+				.where('name', '=', name)
+				.execute();
+
+			if (existingCoffees.length !== 0) throw new ConflictError();
 
 			// Insertion
 			const result = await db
 				.insertInto('coffees')
-				.values(payload)
+				.values({ name })
 				.returning(['coffee_id', 'name', 'created_at'])
 				.executeTakeFirstOrThrow();
 			sendSuccess(res, result);
