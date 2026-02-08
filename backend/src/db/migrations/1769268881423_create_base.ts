@@ -21,6 +21,7 @@ export async function up(db: Kysely<any>): Promise<void> {
 		.createTable('coffees')
 		.addColumn('coffee_id', 'serial', (col) => col.primaryKey())
 		.addColumn('name', 'text', (col) => col.unique().notNull())
+		.addColumn('created_at', 'timestamptz', (col) => col.defaultTo(sql`now()`).notNull())
 		.execute();
 
 	await db.schema
@@ -48,7 +49,7 @@ export async function up(db: Kysely<any>): Promise<void> {
 // biome-ignore lint/suspicious/noExplicitAny: migrations should be frozen in time
 export async function down(db: Kysely<any>): Promise<void> {
 	await db.schema.dropTable('users').execute();
+	await db.schema.dropTable('coffees_countries').execute();
 	await db.schema.dropTable('coffees').execute();
 	await db.schema.dropTable('countries').execute();
-	await db.schema.dropTable('coffees_countries').execute();
 }
