@@ -1,0 +1,17 @@
+{
+	"description": "Automatic code formatting after Edits",
+	"hooks": {
+		"PostToolUse": [
+			{
+				"matcher": "Write|Edit",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "cd \"$CLAUDE_PROJECT_DIR\" && npm run lint:fix && npm run format",
+						"timeout": 30
+					}
+				]
+			}
+		]
+	}
+}
