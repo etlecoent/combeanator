@@ -23,6 +23,11 @@ async function createCoffee(payload: { name: string }): Promise<Coffee> {
 	return response.data.data;
 }
 
+async function deleteCoffee(coffeeId: number): Promise<void> {
+	const response = await api.delete<ApiResponse<void>>(`coffees/${coffeeId}`);
+	return response.data.data;
+}
+
 const searchParamsSchema = z.object({
 	q: z.string().optional().default(''),
 });
@@ -48,10 +53,17 @@ function Coffees(): React.ReactElement {
 
 	const query = useQuery({ queryKey: ['coffees', q], queryFn: () => getCoffees(q) });
 
-	const mutation = useMutation({
+	const createMutation = useMutation({
 		mutationFn: createCoffee,
 		onSuccess: async () => {
 			// Invalidate and refetch
+			await queryClient.invalidateQueries({ queryKey: ['coffees'] });
+		},
+	});
+
+	const deleteMutation = useMutation({
+		mutationFn: deleteCoffee,
+		onSuccess: async () => {
 			await queryClient.invalidateQueries({ queryKey: ['coffees'] });
 		},
 	});
@@ -67,7 +79,7 @@ function Coffees(): React.ReactElement {
 						onChange={(e) => setNewCoffee(e.target.value)}
 						className="h-10 text-base"
 					/>
-					<Button onClick={() => mutation.mutate({ name: newCofee })}>Add Coffee</Button>
+					<Button onClick={() => createMutation.mutate({ name: newCofee })}>Add Coffee</Button>
 				</div>
 
 				<div className="py-12">
@@ -87,7 +99,10 @@ function Coffees(): React.ReactElement {
 					<ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
 						{query.data.map((coffee) => (
 							<li key={coffee.coffee_id} className="flex items-center justify-center">
-								<CoffeeCard coffee={coffee} />
+								<CoffeeCard
+									coffee={coffee}
+									handleDelete={() => deleteMutation.mutate(coffee.coffee_id)}
+								/>
 							</li>
 						))}
 					</ul>

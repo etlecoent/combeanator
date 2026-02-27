@@ -1,4 +1,4 @@
-import type { NextFunction, Request } from 'express';
+import type { Request } from 'express';
 import { Router } from 'express';
 import { z } from 'zod';
 import { db } from '../../db/connection.js';
@@ -29,24 +29,16 @@ const coffeeIdSchema = z.object({
 coffeesRouter.get(
 	'/',
 	validateQuery(searchQuerySchema),
-	async (
-		_req: Request,
-		res: ValidatedResponseLocals<unknown, typeof searchQuerySchema>,
-		next: NextFunction
-	) => {
-		try {
-			const { q: searchQuery } = res.locals.query;
+	async (_req: Request, res: ValidatedResponseLocals<unknown, typeof searchQuerySchema>) => {
+		const { q: searchQuery } = res.locals.query;
 
-			// Query building
-			let query = db.selectFrom('coffees').selectAll();
-			if (searchQuery) {
-				query = query.where('name', 'ilike', `%${searchQuery}%`);
-			}
-			const coffees = await query.execute();
-			sendSuccess(res, coffees);
-		} catch (error) {
-			next(error);
+		// Query building
+		let query = db.selectFrom('coffees').selectAll();
+		if (searchQuery) {
+			query = query.where('name', 'ilike', `%${searchQuery}%`);
 		}
+		const coffees = await query.execute();
+		sendSuccess(res, coffees);
 	}
 );
 
@@ -55,65 +47,52 @@ coffeesRouter.post(
 	validateBody(createCoffeeSchema),
 	async (
 		_req: Request,
-		res: ValidatedResponseLocals<unknown, unknown, typeof createCoffeeSchema>,
-		next: NextFunction
+		res: ValidatedResponseLocals<unknown, unknown, typeof createCoffeeSchema>
 	) => {
-		try {
-			const { name } = res.locals.body;
+		const { name } = res.locals.body;
 
-			// Validate duplicates
-			const existingCoffees = await db
-				.selectFrom('coffees')
-				.selectAll()
-				.where('name', '=', name)
-				.execute();
+		// Validate duplicates
+		const existingCoffees = await db
+			.selectFrom('coffees')
+			.selectAll()
+			.where('name', '=', name)
+			.execute();
 
-			if (existingCoffees.length !== 0) throw new ConflictError();
+		if (existingCoffees.length !== 0) throw new ConflictError();
 
-			// Insertion
-			const result = await db
-				.insertInto('coffees')
-				.values({ name })
-				.returning(['coffee_id', 'name', 'created_at'])
-				.executeTakeFirstOrThrow();
-			sendSuccess(res, result);
-		} catch (error) {
-			next(error);
-		}
+		// Insertion
+		const result = await db
+			.insertInto('coffees')
+			.values({ name })
+			.returning(['coffee_id', 'name', 'created_at'])
+			.executeTakeFirstOrThrow();
+		sendSuccess(res, result);
 	}
 );
 
 coffeesRouter
 	.route('/:id')
 	.all(validateParams(coffeeIdSchema))
-	.get(
-		async (
-			_req: Request,
-			res: ValidatedResponseLocals<typeof coffeeIdSchema>,
-			next: NextFunction
-		) => {
-			try {
-				const { id } = res.locals.params;
-				const coffee = await db
-					.selectFrom('coffees')
-					.selectAll()
-					.where('coffee_id', '=', id)
-					.executeTakeFirst();
-				if (!coffee) throw new NotFoundError();
-				sendSuccess(res, coffee);
-			} catch (error) {
-				next(error);
-			}
-		}
-	);
-// .put(validateBody(updateCoffeeSchema), async (req, res, next) => {
-//   const { id } = res.locals.params;
-//   const payload = res.locals.body;
-//   ...
-// })
-// .delete(async (req, res, next) => {
-//   const { id } = res.locals.params;
-//   ...
-// });
+	.get(async (_req: Request, res: ValidatedResponseLocals<typeof coffeeIdSchema>) => {
+		const { id } = res.locals.params;
+		const coffee = await db
+			.selectFrom('coffees')
+			.selectAll()
+			.where('coffee_id', '=', id)
+			.executeTakeFirst();
+		if (!coffee) throw new NotFoundError();
+		sendSuccess(res, coffee);
+	})
+	// .put(validateBody(updateCoffeeSchema), async (req, res, next) => {
+	//   const { id } = res.locals.params;
+	//   const payload = res.locals.body;
+	//   ...
+	// })
+	.delete(async (_req: Request, res: ValidatedResponseLocals<typeof coffeeIdSchema>) => {
+		const { id } = res.locals.params;
+		const deleteResult = await db.deleteFrom('coffees').where('coffee_id', '=', id).execute();
+		if (deleteResult.length === 0) throw new NotFoundError();
+		sendSuccess(res, null, 204);
+	});
 
 export default coffeesRouter;

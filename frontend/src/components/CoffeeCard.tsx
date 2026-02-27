@@ -1,4 +1,4 @@
-import { Coffee as CoffeeIcon } from 'lucide-react';
+import { ArchiveXIcon } from 'lucide-react';
 import type React from 'react';
 import {
 	Card,
@@ -14,16 +14,19 @@ import { Button } from './ui/button';
 
 interface CoffeeCardProps {
 	coffee: Coffee;
+	handleDelete: () => unknown;
 }
 
-export function CoffeeCard({ coffee }: CoffeeCardProps): React.ReactElement {
+export function CoffeeCard({ coffee, handleDelete }: CoffeeCardProps): React.ReactElement {
 	return (
 		<Card className="w-full max-w-sm">
 			<CardHeader>
 				<CardTitle>{coffee.name}</CardTitle>
 				<CardDescription>Lorem Ipsum</CardDescription>
-				<CardAction className="rounded-full bg-primary/10">
-					<CoffeeIcon className="size-6 text-primary" />
+				<CardAction>
+					<Button variant="ghost" onClick={handleDelete}>
+						<ArchiveXIcon size-6 />
+					</Button>
 				</CardAction>
 				<CardContent>Lorem Ipsum</CardContent>
 				<CardFooter>
