@@ -1,0 +1,23 @@
+[project]
+name = "scraper"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "alembic>=1.18.4",
+    "crawl4ai>=0.8.0",
+    "httpx>=0.28.1",
+    "psycopg[binary]>=3.3.3",
+    "pydantic>=2.12.5",
+    "python-dotenv>=1.2.1",
+]
+
+[dependency-groups]
+dev = [
+    "black>=26.1.0",
+]
+
+[tool.black]
+line-length = 100
+target-version = ["py314"]
