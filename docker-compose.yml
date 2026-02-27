@@ -56,25 +56,8 @@ services:
     networks:
       - combeanator-network
 
-  # MongoDB (optional - uncomment if needed)
-  # mongodb:
-  #   image: mongo:7-jammy
-  #   container_name: combeanator-mongodb
-  #   restart: unless-stopped
-  #   ports:
-  #     - "27017:27017"
-  #   environment:
-  #     - MONGO_INITDB_ROOT_USERNAME=combeanator
-  #     - MONGO_INITDB_ROOT_PASSWORD=combeanator
-  #     - MONGO_INITDB_DATABASE=combeanator
-  #   volumes:
-  #     - mongodb-data:/data/db
-  #   networks:
-  #     - combeanator-network
-
 volumes:
   postgres-data:
-  # mongodb-data:
 
 networks:
   combeanator-network:
