@@ -1,10 +1,20 @@
-from dotenv import load_dotenv
+import sys
+from pathlib import Path
 
-load_dotenv()
+sys.path.insert(0, str(Path(__file__).parent / "src"))
+
+from db.connection import get_connection
+from vendors import vendors
 
 
 def main():
-    pass
+    with get_connection() as conn:
+        for vendor in vendors:
+            print(f"[{vendor.name}] Running bronze...")
+            vendor.run_bronze(conn)
+            print(f"[{vendor.name}] Running silver...")
+            vendor.run_silver(conn)
+            print(f"[{vendor.name}] Done.")
 
 
 if __name__ == "__main__":
