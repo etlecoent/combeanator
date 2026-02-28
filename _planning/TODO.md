@@ -1,8 +1,3 @@
-- Infra
-    - Split CLAUDE.md file
-
-- Add the option to delete coffees
-
 - Full Stack
     - Create the login & logout pages/features
     - Mini game page
