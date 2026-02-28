@@ -4,8 +4,10 @@ from datetime import datetime, timezone
 import httpx
 import psycopg
 
+from .config import URL, VENDOR
+
 VENDOR = "coffeeaddicts"
-SHOPIFY_URL = "https://coffeeaddicts.ca/collections/coffee-beans/products.json"
+URL = "https://coffeeaddicts.ca/collections/coffee-beans/products.json"
 
 
 def extract() -> list[dict]:
@@ -13,7 +15,7 @@ def extract() -> list[dict]:
     page = 1
     with httpx.Client() as client:
         while True:
-            response = client.get(SHOPIFY_URL, params={"page": page, "limit": 250})
+            response = client.get(URL, params={"page": page, "limit": 250})
             response.raise_for_status()
             batch = response.json().get("products", [])
             if not batch:
