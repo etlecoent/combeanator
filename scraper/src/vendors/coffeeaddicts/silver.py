@@ -2,7 +2,7 @@ import uuid
 
 import psycopg
 
-VENDOR = "coffeeaddicts"
+from .config import VENDOR
 
 
 def _extract_tag(tags: list[str], prefix: str) -> list[str]:
@@ -21,7 +21,8 @@ def _transform_row(row: dict) -> dict:
     return {
         "bronze_coffees_id": str(row["id"]),
         "name": raw.get("title"),
-        "vendor": raw.get("vendor"),
+        "vendor": VENDOR,
+        "roaster": raw.get("vendor"),
         "origin": _extract_tag(tags, "origin"),
         "process": _extract_tag(tags, "process"),
         "roast_level": _extract_tag(tags, "roast"),
@@ -56,6 +57,7 @@ def load(conn: psycopg.Connection, items: list[dict]) -> None:
             "bronze_coffees_id": item["bronze_coffees_id"],
             "name": item["name"],
             "vendor": item["vendor"],
+            "roaster": item["roaster"],
             "origin": item["origin"],
             "process": item["process"],
             "roast_level": item["roast_level"],
@@ -72,10 +74,10 @@ def load(conn: psycopg.Connection, items: list[dict]) -> None:
         cur.executemany(
             """
             INSERT INTO silver_coffees (
-                id, bronze_coffees_id, name, vendor,
+                id, bronze_coffees_id, name, vendor, roaster,
                 origin, process, roast_level, producer, altitude, variety, tasting_notes, recommended_brew
             ) VALUES (
-                %(id)s, %(bronze_coffees_id)s, %(name)s, %(vendor)s,
+                %(id)s, %(bronze_coffees_id)s, %(name)s, %(vendor)s, %(roaster)s,
                 %(origin)s, %(process)s, %(roast_level)s, %(producer)s,
                 %(altitude)s, %(variety)s, %(tasting_notes)s, %(recommended_brew)s
             )

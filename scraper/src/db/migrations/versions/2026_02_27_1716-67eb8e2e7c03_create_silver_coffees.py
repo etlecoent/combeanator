@@ -25,6 +25,7 @@ def upgrade() -> None:
             bronze_coffees_id UUID NOT NULL REFERENCES bronze_coffees(id) ON DELETE CASCADE,
             name TEXT NOT NULL,
             vendor TEXT NOT NULL,
+            roaster TEXT NOT NULL,
             origin TEXT[],
             process TEXT[],
             roast_level TEXT[],
