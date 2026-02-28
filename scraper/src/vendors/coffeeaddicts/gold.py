@@ -4,7 +4,7 @@ import json
 
 from .config import VENDOR
 
-QUEUE_NAME = "coffees:v1"
+QUEUE_NAME = "coffees:ingest:v1"
 
 def extract(conn: psycopg.Connection) -> list[dict]:
     with conn.cursor(row_factory=psycopg.rows.dict_row) as cur:
