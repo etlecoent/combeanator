@@ -12,7 +12,11 @@ const envSchema = z.object({
 	POSTGRES_USER: z.string().min(1),
 	POSTGRES_PASSWORD: z.string().min(1),
 	POSTGRES_DB: z.string().min(1),
-	POSTGRES_SCHEMA: z.string().min(1).default('public'),
+	POSTGRES_SCHEMA: z.string().min(1),
+
+	// Redis Configuration
+	REDIS_HOST: z.string().min(1),
+	REDIS_PORT: z.coerce.number().positive().int(),
 
 	// CORS Configuration
 	CORS_ORIGIN: z.string().url(),
