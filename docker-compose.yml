@@ -42,7 +42,7 @@ services:
 
   # Redis - Job queue
   redis:
-    image: redis:7-alpine
+    image: redis:8.6.1-alpine
     container_name: combeanator-redis
     restart: unless-stopped
     ports:
@@ -54,7 +54,7 @@ services:
 
   # PostgreSQL database
   postgres:
-    image: postgres:16-alpine
+    image: postgres:18.3-alpine
     container_name: combeanator-postgres
     restart: unless-stopped
     ports:
