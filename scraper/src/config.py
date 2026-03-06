@@ -8,24 +8,26 @@ load_dotenv()
 
 class Config(BaseModel):
     # postgres
-    postgres_host: str
-    postgres_port: int
-    postgres_user: str
-    postgres_password: str
-    postgres_db: str
-    postgres_schema: str
+    POSTGRES_HOST: str
+    POSTGRES_PORT: int
+    POSTGRES_USER: str
+    POSTGRES_PASSWORD: str
+    POSTGRES_DB: str
+    POSTGRES_SCHEMA: str
     # redis
-    redis_host: str
-    redis_port: int
+    REDIS_HOST: str
+    REDIS_PORT: int
 
 
-config = Config(
-    postgres_host=os.environ["POSTGRES_HOST"],
-    postgres_port=int(os.environ["POSTGRES_PORT"]),
-    postgres_user=os.environ["POSTGRES_USER"],
-    postgres_password=os.environ["POSTGRES_PASSWORD"],
-    postgres_db=os.environ["POSTGRES_DB"],
-    postgres_schema=os.environ["POSTGRES_SCHEMA"],
-    redis_host=os.environ["REDIS_HOST"],
-    redis_port=int(os.environ["REDIS_PORT"]),
+CONFIG = Config(
+    # postgres
+    POSTGRES_HOST=os.environ["POSTGRES_HOST"],
+    POSTGRES_PORT=int(os.environ["POSTGRES_PORT"]),
+    POSTGRES_USER=os.environ["POSTGRES_USER"],
+    POSTGRES_PASSWORD=os.environ["POSTGRES_PASSWORD"],
+    POSTGRES_DB=os.environ["POSTGRES_DB"],
+    POSTGRES_SCHEMA=os.environ["POSTGRES_SCHEMA"],
+    # redis
+    REDIS_HOST=os.environ["REDIS_HOST"],
+    REDIS_PORT=int(os.environ["REDIS_PORT"]),
 )
