@@ -53,6 +53,7 @@
 	"files": {
 		"includes": [
 			"**",
+			"!scraper/**",
 			"!**/node_modules",
 			"!**/dist",
 			"!**/build",
