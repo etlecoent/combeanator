@@ -7,7 +7,7 @@ from alembic import context
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
-from config import config as app_config
+from config import CONFIG
 
 alembic_config = context.config
 
@@ -17,11 +17,11 @@ if alembic_config.config_file_name is not None:
 target_metadata = None
 
 db_url = (
-    f"postgresql+psycopg://{app_config.postgres_user}:{app_config.postgres_password}"
-    f"@{app_config.postgres_host}:{app_config.postgres_port}/{app_config.postgres_db}"
+    f"postgresql+psycopg://{CONFIG.POSTGRES_USER}:{CONFIG.POSTGRES_PASSWORD}"
+    f"@{CONFIG.POSTGRES_HOST}:{CONFIG.POSTGRES_PORT}/{CONFIG.POSTGRES_DB}"
 )
 
-connect_args = {"options": f"-c search_path={app_config.postgres_schema}"}
+connect_args = {"options": f"-c search_path={CONFIG.POSTGRES_SCHEMA}"}
 
 
 def run_migrations_offline() -> None:
