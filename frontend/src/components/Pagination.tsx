@@ -1,7 +1,6 @@
 import {
 	Pagination as BasePagination,
 	PaginationContent,
-	PaginationEllipsis,
 	PaginationItem,
 	PaginationLink,
 	PaginationNext,
@@ -44,12 +43,6 @@ export function Pagination({
 					/>
 				</PaginationItem>
 
-				{windowStart > half && (
-					<PaginationItem>
-						<PaginationEllipsis />
-					</PaginationItem>
-				)}
-
 				{pageNumbers.map((pageNum) => (
 					<PaginationItem key={pageNum}>
 						<PaginationLink
@@ -64,11 +57,6 @@ export function Pagination({
 						</PaginationLink>
 					</PaginationItem>
 				))}
-				{windowEnd < totalPages - windowSize && (
-					<PaginationItem>
-						<PaginationEllipsis />
-					</PaginationItem>
-				)}
 
 				<PaginationItem>
 					<PaginationNext
