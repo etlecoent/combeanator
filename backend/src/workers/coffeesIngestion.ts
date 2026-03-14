@@ -3,7 +3,6 @@ import { z } from 'zod';
 import { db } from '../db/connection.js';
 import { createRedisClient } from '../redis_client/connection.js';
 import rootLogger from '../shared/logger.js';
-import { up } from '../db/migrations/1769268881423_create_base.js';
 
 const logger = rootLogger.child({ name: 'coffeesIngestion' });
 
