@@ -19,19 +19,19 @@ interface CoffeeCardProps {
 
 export function CoffeeCard({ coffee, handleDelete }: CoffeeCardProps): React.ReactElement {
 	return (
-		<Card className="w-full max-w-sm">
+		<Card className="w-full max-w-sm" size="sm">
 			<CardHeader>
 				<CardTitle>{coffee.name}</CardTitle>
 				<CardDescription>Lorem Ipsum</CardDescription>
 				<CardAction>
-					<Button variant="ghost" onClick={handleDelete}>
+					<Button variant="ghost" size="sm" onClick={handleDelete}>
 						<ArchiveXIcon size-6 />
 					</Button>
 				</CardAction>
 				<CardContent>Lorem Ipsum</CardContent>
-				<CardFooter>
-					<Button>Learn More</Button>
-				</CardFooter>
+				<Button size="sm" className="w-full">
+					Learn More
+				</Button>
 			</CardHeader>
 		</Card>
 	);
