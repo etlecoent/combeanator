@@ -1,7 +1,6 @@
-import { createFileRoute } from '@tanstack/react-router';
-import type { ReactElement } from 'react';
-import { useNavigate } from '@tanstack/react-router';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { Coffee } from 'lucide-react';
+import type { ReactElement } from 'react';
 import { SearchBar } from '@/components/SearchBar.js';
 
 export const Route = createFileRoute('/')({
