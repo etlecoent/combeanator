@@ -3,8 +3,8 @@ import { dialect } from './interface.js';
 import type { CoffeesTable } from './types/coffee.js';
 import type { CoffeesCountriesTable } from './types/coffee_country.js';
 import type { CountriesTable } from './types/country.js';
-import type { UsersTable } from './types/user.js';
 import type { RoastersTable } from './types/roaster.js';
+import type { UsersTable } from './types/user.js';
 
 export type Database = {
 	users: UsersTable;
