@@ -65,7 +65,8 @@
 			"!**/.vite",
 			"!**/*.log",
 			"!**/tsconfig.*",
-			"!**/routeTree.gen.ts"
+			"!**/routeTree.gen.ts",
+			"!**/components/ui/**"
 		]
 	}
 }
