@@ -124,13 +124,15 @@ function Coffees(): React.ReactElement {
 					</ul>
 				)}
 
-				<Pagination
-					currentPage={page}
-					totalPages={
-						query.data?.pagination?.total ? Math.ceil(query.data.pagination.total / size) : 1
-					}
-					onPageChange={handlePageChange}
-				/>
+				<div className="m-5">
+					<Pagination
+						currentPage={page}
+						totalPages={
+							query.data?.pagination?.total ? Math.ceil(query.data.pagination.total / size) : 1
+						}
+						onPageChange={handlePageChange}
+					/>
+				</div>
 			</div>
 		</section>
 	);
