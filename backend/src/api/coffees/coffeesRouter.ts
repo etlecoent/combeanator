@@ -22,6 +22,7 @@ const searchQuerySchema = z.object({
 
 const createCoffeeSchema = z.object({
 	name: z.string().trim(),
+	roaster_id: z.number().positive(),
 });
 
 const coffeeIdSchema = z.object({
@@ -61,7 +62,7 @@ coffeesRouter.post(
 		_req: Request,
 		res: ValidatedResponseLocals<unknown, unknown, typeof createCoffeeSchema>
 	) => {
-		const { name } = res.locals.body;
+		const { name, roaster_id } = res.locals.body;
 
 		// Validate duplicates
 		const existingCoffees = await db
@@ -75,7 +76,7 @@ coffeesRouter.post(
 		// Insertion
 		const result = await db
 			.insertInto('coffees')
-			.values({ name })
+			.values({ name, roaster_id })
 			.returning(['coffee_id', 'name', 'created_at'])
 			.executeTakeFirstOrThrow();
 		sendSuccess({ res, data: result });
