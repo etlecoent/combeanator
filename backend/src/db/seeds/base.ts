@@ -25,15 +25,26 @@ export async function seed(db: Kysely<any>): Promise<void> {
 		])
 		.execute();
 
+	// Seed roasters
+	await db
+		.insertInto('roasters')
+		.values([
+			{ name: 'Blue Bottle Coffee' },
+			{ name: 'Stumptown Coffee Roasters' },
+			{ name: 'Intelligentsia Coffee' },
+			{ name: 'Counter Culture Coffee' },
+		])
+		.execute();
+
 	// Seed coffees
 	await db
 		.insertInto('coffees')
 		.values([
-			{ name: 'Arabica' },
-			{ name: 'Robusta' },
-			{ name: 'Bourbon' },
-			{ name: 'Typica' },
-			{ name: 'Gesha' },
+			{ name: 'Sweet Apple', roaster_id: 1 },
+			{ name: 'Dark Genius', roaster_id: 2 },
+			{ name: 'Light Sleep', roaster_id: 3 },
+			{ name: 'Hammer', roaster_id: 4 },
+			{ name: 'Fruit Punch', roaster_id: 1 },
 		])
 		.execute();
 
@@ -41,15 +52,15 @@ export async function seed(db: Kysely<any>): Promise<void> {
 	await db
 		.insertInto('coffees_countries')
 		.values([
-			{ coffee_id: 1, country_id: 1 }, // Arabica - Brazil
-			{ coffee_id: 1, country_id: 2 }, // Arabica - Colombia
-			{ coffee_id: 1, country_id: 3 }, // Arabica - Ethiopia
-			{ coffee_id: 2, country_id: 5 }, // Robusta - Vietnam
-			{ coffee_id: 2, country_id: 6 }, // Robusta - Indonesia
-			{ coffee_id: 3, country_id: 1 }, // Bourbon - Brazil
-			{ coffee_id: 3, country_id: 4 }, // Bourbon - Kenya
-			{ coffee_id: 4, country_id: 2 }, // Typica - Colombia
-			{ coffee_id: 5, country_id: 3 }, // Gesha - Ethiopia
+			{ coffee_id: 1, country_id: 1 },
+			{ coffee_id: 1, country_id: 2 },
+			{ coffee_id: 1, country_id: 3 },
+			{ coffee_id: 2, country_id: 5 },
+			{ coffee_id: 2, country_id: 6 },
+			{ coffee_id: 3, country_id: 1 },
+			{ coffee_id: 3, country_id: 4 },
+			{ coffee_id: 4, country_id: 2 },
+			{ coffee_id: 5, country_id: 3 },
 		])
 		.execute();
 }

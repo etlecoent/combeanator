@@ -3,46 +3,105 @@ import { z } from 'zod';
 import { db } from '../db/connection.js';
 import { createRedisClient } from '../redis_client/connection.js';
 import rootLogger from '../shared/logger.js';
+import { up } from '../db/migrations/1769268881423_create_base.js';
 
 const logger = rootLogger.child({ name: 'coffeesIngestion' });
 
 const coffeeIngestV1Schema = z.object({
-	name: z.string(),
+	name: z.string().trim(),
+	roaster: z.string().trim(),
 });
+type CoffeeIngestV1 = z.infer<typeof coffeeIngestV1Schema>;
 
 const QUEUE = 'coffees:ingest:v1' as const;
 
-const processCoffee = async (rawCoffee: string) => {
-	let unsafeCoffee: unknown;
+const parseRawCoffee = (rawCoffee: string) => {
+	logger.info({ rawCoffee }, 'Parsing raw coffee from queue');
+	const unsafeCoffee = JSON.parse(rawCoffee);
+	const coffee = coffeeIngestV1Schema.parse(unsafeCoffee);
+
+	return coffee;
+};
+
+type UpsertRoasterInput = { name: string };
+const upsertRoaster = async (roaster: UpsertRoasterInput) => {
+	logger.info({ roaster }, 'Upserting roaster');
+
+	let dbRoaster = await db
+		.selectFrom('roasters')
+		.selectAll()
+		.where('name', '=', roaster.name)
+		.executeTakeFirst();
+
+	if (!dbRoaster) {
+		const [newRoaster] = await db.insertInto('roasters').values(roaster).returningAll().execute();
+		dbRoaster = newRoaster;
+		logger.info({ roaster: newRoaster }, 'Created new roaster');
+	} else {
+		const [updatedRoaster] = await db
+			.updateTable('roasters')
+			.set({ name: roaster.name, updated_at: new Date() })
+			.where('roaster_id', '=', dbRoaster.roaster_id)
+			.returningAll()
+			.execute();
+		dbRoaster = updatedRoaster;
+		logger.info({ roaster: dbRoaster }, 'Updated existing roaster');
+	}
+
+	return dbRoaster;
+};
+type UpsertCoffeeInput = { name: string; roaster_id: number };
+const upsertCoffee = async (coffee: UpsertCoffeeInput) => {
+	logger.info({ coffee }, 'Upserting coffee');
+
+	let dbCoffee = await db
+		.selectFrom('coffees')
+		.selectAll()
+		.where('name', '=', coffee.name)
+		.executeTakeFirst();
+
+	if (!dbCoffee) {
+		const [newCoffee] = await db.insertInto('coffees').values(coffee).returningAll().execute();
+		dbCoffee = newCoffee;
+		logger.info({ coffee: newCoffee }, 'Created new coffee');
+	} else {
+		const [updatedCoffee] = await db
+			.updateTable('coffees')
+			.set({ name: coffee.name, updated_at: new Date() })
+			.where('coffee_id', '=', dbCoffee.coffee_id)
+			.returningAll()
+			.execute();
+		dbCoffee = updatedCoffee;
+		logger.info({ coffee: dbCoffee }, 'Updated existing coffee');
+	}
+
+	return dbCoffee;
+};
+
+const processRawCoffee = async (rawCoffee: string) => {
+	let coffee: CoffeeIngestV1 | null = null;
 	try {
-		unsafeCoffee = JSON.parse(rawCoffee);
+		coffee = parseRawCoffee(rawCoffee);
 	} catch (err) {
-		logger.error({ err, rawCoffee }, 'Error parsing coffee from queue');
+		logger.error({ err, rawCoffee }, 'Error parsing raw coffee');
 		return;
 	}
 
-	const result = coffeeIngestV1Schema.safeParse(unsafeCoffee);
-	if (!result.success) {
-		logger.error({ rawCoffee, error: result.error }, 'Invalid coffee format');
-		return;
-	}
-
-	const coffee = result.data;
-
+	let roasterId: number | null = null;
 	try {
-		const existingCoffee = await db
-			.selectFrom('coffees')
-			.selectAll()
-			.where('name', '=', coffee.name)
-			.executeTakeFirst();
+		const roaster = await upsertRoaster({ name: coffee.roaster });
+		roasterId = roaster.roaster_id;
+	} catch (err) {
+		logger.error({ err, roaster: coffee.roaster }, 'Error upserting roaster for coffee');
+		return;
+	}
 
-		if (!existingCoffee) {
-			await db.insertInto('coffees').values(coffee).execute();
-			logger.info({ coffee }, 'Inserted new coffee into database');
-		} else {
-			// TODO: Update coffee if it already exists, for now we just log it
-			logger.info({ coffee }, 'Coffee already exists, should update it');
-		}
+	if (!roasterId) {
+		logger.error({ roasterId }, 'No roaster ID after upsert, cannot proceed with coffee upsert');
+		return;
+	}
+	try {
+		await upsertCoffee({ name: coffee.name, roaster_id: roasterId });
 	} catch (err) {
 		logger.error({ err, coffee }, 'Error inserting/updating coffee in database');
 	}
@@ -68,7 +127,7 @@ export const startCoffeesIngestion = async () => {
 			try {
 				const item = await redisClient.blPop(QUEUE, 0);
 				const rawCoffee = item?.element;
-				if (rawCoffee) await processCoffee(rawCoffee);
+				if (rawCoffee) await processRawCoffee(rawCoffee);
 			} catch (err) {
 				if (closed) break;
 				logger.error({ err }, 'Unexpected error in coffees ingestion loop');
