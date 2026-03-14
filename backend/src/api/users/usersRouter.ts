@@ -8,7 +8,7 @@ const usersRouter: Router = Router();
 usersRouter.get('/', async (_req: Request, res: Response, next: NextFunction) => {
 	try {
 		const users = await db.selectFrom('users').selectAll().execute();
-		sendSuccess(res, users);
+		sendSuccess({ res, data: users });
 	} catch (error) {
 		next(error);
 	}

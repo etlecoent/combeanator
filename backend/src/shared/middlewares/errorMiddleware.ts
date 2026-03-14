@@ -15,19 +15,19 @@ const errorMiddleware: ErrorRequestHandler = (
 	// Handle custom AppError
 	if (err instanceof AppError) {
 		logger.warn({ err }, `${err.name}: ${err.message}`);
-		return sendError(res, err.message, err.statusCode, err.code);
+		return sendError({ res, message: err.message, statusCode: err.statusCode, code: err.code });
 	}
 	// Handle Zod validation errors
 	if (err instanceof ZodError) {
 		const message = err.errors.map((e) => `${e.path.join('.')}: ${e.message}`).join(', ');
 		logger.warn({ err }, `Validation error: ${message}`);
-		return sendError(res, message, 400, 'VALIDATION_ERROR');
+		return sendError({ res, message, statusCode: 400, code: 'VALIDATION_ERROR' });
 	}
 
 	// Handle Kysely not found error
 	if (err instanceof NoResultError) {
 		logger.warn({ err }, 'Database query returned no result');
-		return sendError(res, 'Ressource not found', 404, 'NOT_FOUND');
+		return sendError({ res, message: 'Ressource not found', statusCode: 404, code: 'NOT_FOUND' });
 	}
 
 	// Handle unknown errors (log as error since these are unexpected)
@@ -39,7 +39,7 @@ const errorMiddleware: ErrorRequestHandler = (
 			? 'An unexpected error occurred'
 			: err.message || 'Something went wrong';
 
-	return sendError(res, message, 500, 'INTERNAL_SERVER_ERROR');
+	return sendError({ res, message, statusCode: 500, code: 'INTERNAL_SERVER_ERROR' });
 };
 
 export default errorMiddleware;

@@ -19,33 +19,37 @@ export interface ErrorResponse {
 	};
 }
 
-/**
- * Send a standardized success response
- * @param res - Express response object
- * @param data - Response data
- * @param statusCode - HTTP status code (default: 200)
- */
-export const sendSuccess = <T>(res: Response, data: T, statusCode = 200): void => {
+type SendSuccessParams<T> = {
+	res: Response;
+	data: T;
+	pagination?: {
+		page: number;
+		total: number;
+		size: number;
+	};
+	statusCode?: number;
+};
+export const sendSuccess = <T>({
+	res,
+	data,
+	pagination,
+	statusCode = 200,
+}: SendSuccessParams<T>): void => {
 	const response: SuccessResponse<T> = {
 		success: true,
 		data,
+		...(pagination && { pagination }),
 	};
 	res.status(statusCode).json(response);
 };
 
-/**
- * Send a standardized error response
- * @param res - Express response object
- * @param message - Error message
- * @param statusCode - HTTP status code
- * @param code - Optional error code
- */
-export const sendError = (
-	res: Response,
-	message: string,
-	statusCode: number,
-	code?: string
-): void => {
+type SendErrorParams = {
+	res: Response;
+	message: string;
+	statusCode: number;
+	code?: string;
+};
+export const sendError = ({ res, message, statusCode, code }: SendErrorParams): void => {
 	const response: ErrorResponse = {
 		success: false,
 		error: {

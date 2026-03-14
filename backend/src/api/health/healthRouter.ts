@@ -5,10 +5,13 @@ import { sendSuccess } from '../../shared/utils/response.js';
 const healthRouter: Router = Router();
 
 healthRouter.get('/', (_req: Request, res: Response, _next: NextFunction) => {
-	sendSuccess(res, {
-		message: 'ok',
-		timestamp: new Date().toISOString(),
-		uptime: process.uptime(),
+	sendSuccess({
+		res,
+		data: {
+			message: 'ok',
+			timestamp: new Date().toISOString(),
+			uptime: process.uptime(),
+		},
 	});
 });
 
