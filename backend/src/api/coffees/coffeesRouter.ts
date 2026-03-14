@@ -15,7 +15,9 @@ const coffeesRouter: Router = Router();
 
 // Schemas
 const searchQuerySchema = z.object({
-	q: z.string().trim().optional(),
+	query: z.string().trim().optional(),
+	page: z.coerce.number().positive(),
+	size: z.coerce.number().positive().min(10).max(10),
 });
 
 const createCoffeeSchema = z.object({
@@ -30,15 +32,25 @@ coffeesRouter.get(
 	'/',
 	validateQuery(searchQuerySchema),
 	async (_req: Request, res: ValidatedResponseLocals<unknown, typeof searchQuerySchema>) => {
-		const { q: searchQuery } = res.locals.query;
+		const { query: searchQuery, page, size } = res.locals.query;
 
-		// Query building
-		let query = db.selectFrom('coffees').selectAll();
+		let baseQuery = db.selectFrom('coffees');
 		if (searchQuery) {
-			query = query.where('name', 'ilike', `%${searchQuery}%`);
+			baseQuery = baseQuery.where('name', 'ilike', `%${searchQuery}%`);
 		}
-		const coffees = await query.execute();
-		sendSuccess(res, coffees);
+
+		const [coffees, countResult] = await Promise.all([
+			baseQuery
+				.selectAll()
+				.offset((page - 1) * size)
+				.limit(size)
+				.execute(),
+			baseQuery
+				.select(({ fn }) => fn.count<number>('coffee_id').as('total'))
+				.executeTakeFirstOrThrow(),
+		]);
+
+		sendSuccess({ res, data: coffees, pagination: { total: countResult.total, page, size } });
 	}
 );
 
@@ -66,7 +78,7 @@ coffeesRouter.post(
 			.values({ name })
 			.returning(['coffee_id', 'name', 'created_at'])
 			.executeTakeFirstOrThrow();
-		sendSuccess(res, result);
+		sendSuccess({ res, data: result });
 	}
 );
 
@@ -81,7 +93,7 @@ coffeesRouter
 			.where('coffee_id', '=', id)
 			.executeTakeFirst();
 		if (!coffee) throw new NotFoundError();
-		sendSuccess(res, coffee);
+		sendSuccess({ res, data: coffee });
 	})
 	// .put(validateBody(updateCoffeeSchema), async (req, res, next) => {
 	//   const { id } = res.locals.params;
@@ -92,7 +104,7 @@ coffeesRouter
 		const { id } = res.locals.params;
 		const deleteResult = await db.deleteFrom('coffees').where('coffee_id', '=', id).execute();
 		if (deleteResult.length === 0) throw new NotFoundError();
-		sendSuccess(res, null, 204);
+		sendSuccess({ res, data: null, statusCode: 204 });
 	});
 
 export default coffeesRouter;

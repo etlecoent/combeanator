@@ -1,35 +1,41 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import React from 'react';
 import z from 'zod';
 import { CoffeeCard } from '@/components/CoffeeCard';
+import { Pagination } from '@/components/Pagination';
 import { SearchBar } from '@/components/SearchBar';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
 import api from '@/lib/api';
 import type { Coffee } from '@/types/coffee';
-import type { ApiResponse } from '@/types/response';
+import type { ApiResponse, PaginatedApiResponse } from '@/types/response';
 
-async function getCoffees(query?: string): Promise<Coffee[]> {
-	const params = query ? { q: query } : {};
-
-	const response = await api.get<ApiResponse<Coffee[]>>('/coffees', { params });
-	return response.data.data;
+type GetCoffeesParams = {
+	query?: string;
+	page: number;
+	size: number;
+};
+async function getCoffees(params: GetCoffeesParams) {
+	const response = await api.get<PaginatedApiResponse<Coffee[]>>('/coffees', { params });
+	return response.data;
 }
 
-async function createCoffee(payload: { name: string }): Promise<Coffee> {
+async function createCoffee(payload: { name: string }) {
 	const response = await api.post<ApiResponse<Coffee>>('/coffees', payload);
-	return response.data.data;
+	return response.data;
 }
 
-async function deleteCoffee(coffeeId: number): Promise<void> {
+async function deleteCoffee(coffeeId: number) {
 	const response = await api.delete<ApiResponse<void>>(`coffees/${coffeeId}`);
-	return response.data.data;
+	return response.data;
 }
 
 const searchParamsSchema = z.object({
-	q: z.string().optional().default(''),
+	page: z.coerce.number().positive().catch(1),
+	size: z.coerce.number().positive().min(10).max(10).catch(10),
+	q: z.string().catch(''),
 });
 
 export const Route = createFileRoute('/coffees')({
@@ -38,25 +44,35 @@ export const Route = createFileRoute('/coffees')({
 });
 
 function Coffees(): React.ReactElement {
-	const { q } = Route.useSearch();
+	const { q, page, size } = Route.useSearch();
 	const navigate = useNavigate();
 	const queryClient = useQueryClient();
 
 	const handleSearch = (query: string) => {
 		navigate({
 			to: '/coffees',
-			search: { q: query },
+			search: (prev) => ({ ...prev, page: 1, q: query }),
+		});
+	};
+
+	const handlePageChange = (newPage: number) => {
+		navigate({
+			to: '/coffees',
+			search: (prev) => ({ ...prev, page: newPage }),
 		});
 	};
 
 	const [newCofee, setNewCoffee] = React.useState('');
 
-	const query = useQuery({ queryKey: ['coffees', q], queryFn: () => getCoffees(q) });
+	const query = useQuery({
+		queryKey: ['coffees', q, page, size],
+		queryFn: () => getCoffees({ query: q, page, size }),
+		placeholderData: keepPreviousData,
+	});
 
 	const createMutation = useMutation({
 		mutationFn: createCoffee,
 		onSuccess: async () => {
-			// Invalidate and refetch
 			await queryClient.invalidateQueries({ queryKey: ['coffees'] });
 		},
 	});
@@ -91,13 +107,13 @@ function Coffees(): React.ReactElement {
 					</div>
 				)}
 				{query.isError && <div className="py-12 text-center text-red-600">Error</div>}
-				{query.isSuccess && query.data.length === 0 && (
+				{query.isSuccess && query.data.data.length === 0 && (
 					<div className="py-12 text-center">No coffees found</div>
 				)}
 
-				{query.isSuccess && query.data.length > 0 && (
+				{query.isSuccess && query.data.data.length > 0 && (
 					<ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-						{query.data.map((coffee) => (
+						{query.data.data.map((coffee) => (
 							<li key={coffee.coffee_id} className="flex items-center justify-center">
 								<CoffeeCard
 									coffee={coffee}
@@ -107,6 +123,14 @@ function Coffees(): React.ReactElement {
 						))}
 					</ul>
 				)}
+
+				<Pagination
+					currentPage={page}
+					totalPages={
+						query.data?.pagination?.total ? Math.ceil(query.data.pagination.total / size) : 1
+					}
+					onPageChange={handlePageChange}
+				/>
 			</div>
 		</section>
 	);
