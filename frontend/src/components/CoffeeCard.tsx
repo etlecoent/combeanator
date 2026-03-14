@@ -14,9 +14,14 @@ import { Button } from './ui/button';
 interface CoffeeCardProps {
 	coffee: Coffee;
 	handleDelete: () => unknown;
+	handleDetails: () => unknown;
 }
 
-export function CoffeeCard({ coffee, handleDelete }: CoffeeCardProps): React.ReactElement {
+export function CoffeeCard({
+	coffee,
+	handleDelete,
+	handleDetails,
+}: CoffeeCardProps): React.ReactElement {
 	return (
 		<Card className="w-full max-w-sm" size="sm">
 			<CardHeader>
@@ -28,7 +33,7 @@ export function CoffeeCard({ coffee, handleDelete }: CoffeeCardProps): React.Rea
 					</Button>
 				</CardAction>
 				<CardContent>Lorem Ipsum</CardContent>
-				<Button size="sm" className="w-full">
+				<Button size="sm" className="w-full" onClick={handleDetails}>
 					Learn More
 				</Button>
 			</CardHeader>
