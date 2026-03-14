@@ -25,12 +25,12 @@ Full-stack monorepo using NPM Workspaces with React frontend, Express backend, a
 **ES Modules Everywhere**: Both workspaces use `"type": "module"` in package.json. Always use `import`/`export`, never `require`. In TypeScript imports, use `.js` extensions even though files are `.ts` (e.g., `import logger from "./logger.js"`).
 
 **Multi-Stage Dockerfiles**: Each service has a single Dockerfile with multiple targets:
-- `development` - Used by docker-compose (hot reload enabled)
+- `development` - Used by docker compose (hot reload enabled)
 - `builder` - Compiles TypeScript
 - `production` - Minimal runtime (for CI/CD)
 
 **Environment Variables**:
-- Each workspace has its own `.env` file (loaded by docker-compose via `env_file`)
+- Each workspace has its own `.env` file (loaded by docker compose via `env_file`)
 - Production uses AWS EB environment properties, not `.env` files
 
 ## Development Commands
@@ -54,25 +54,25 @@ npm run clean            # Remove all node_modules and build artifacts
 ### Docker Development
 ```bash
 # Start all services
-docker-compose up -d
+docker compose up -d
 
 # Start specific service
-docker-compose up frontend -d
-docker-compose up backend -d
+docker compose up frontend -d
+docker compose up backend -d
 
 # Rebuild after dependency changes
-docker-compose down
-docker-compose up --build -d
+docker compose down
+docker compose up --build -d
 
 # View logs
-docker-compose logs -f backend
-docker-compose logs -f frontend
+docker compose logs -f backend
+docker compose logs -f frontend
 
 # Stop all services
-docker-compose down
+docker compose down
 
 # Reset everything (including database)
-docker-compose down -v
+docker compose down -v
 ```
 
 ## Code Quality & Standards

@@ -37,10 +37,10 @@ Everything runs in containers - no local Node.js needed.
 
 ```bash
 # Start all services
-docker-compose up -d
+docker compose up -d
 
 # View logs
-docker-compose logs -f
+docker compose logs -f
 ```
 
 - **Frontend**: http://localhost:3000
@@ -99,55 +99,55 @@ npm run clean            # Remove node_modules and build artifacts
 
 ```bash
 # Start services
-docker-compose up -d                    # All services
-docker-compose up frontend -d           # Frontend only
-docker-compose up backend -d            # Backend only
+docker compose up -d                    # All services
+docker compose up frontend -d           # Frontend only
+docker compose up backend -d            # Backend only
 
 # Rebuild after dependency changes
-docker-compose down
-docker-compose up --build -d
+docker compose down
+docker compose up --build -d
 
 # View logs
-docker-compose logs -f                  # All services
-docker-compose logs -f backend          # Backend only
-docker-compose logs -f frontend         # Frontend only
+docker compose logs -f                  # All services
+docker compose logs -f backend          # Backend only
+docker compose logs -f frontend         # Frontend only
 
 # Execute commands in containers
-docker-compose exec backend npm install <package>
-docker-compose exec backend npm run migrate:latest
-docker-compose exec frontend npm test
+docker compose exec backend npm install <package>
+docker compose exec backend npm run migrate:latest
+docker compose exec frontend npm test
 
 # Stop and cleanup
-docker-compose down                     # Stop services
-docker-compose down -v                  # Stop and remove volumes (resets database)
+docker compose down                     # Stop services
+docker compose down -v                  # Stop and remove volumes (resets database)
 ```
 
 ### Database Management
 
 ```bash
 # Create a new migration
-docker-compose exec backend npm run migrate:create -- migration_name
+docker compose exec backend npm run migrate:create -- migration_name
 
 # Run all pending migrations
-docker-compose exec backend npm run migrate:latest
+docker compose exec backend npm run migrate:latest
 
 # Run one migration up
-docker-compose exec backend npm run migrate:up
+docker compose exec backend npm run migrate:up
 
 # Rollback one migration
-docker-compose exec backend npm run migrate:down
+docker compose exec backend npm run migrate:down
 
 # List all migrations
-docker-compose exec backend npm run migrate:list
+docker compose exec backend npm run migrate:list
 
 # Create a new seed
-docker-compose exec backend npm run seed:make -- seed_name
+docker compose exec backend npm run seed:make -- seed_name
 
 # Run all seeds
-docker-compose exec backend npm run seed:run
+docker compose exec backend npm run seed:run
 
 # Access PostgreSQL CLI directly
-docker-compose exec postgres psql -U combeanator -d combeanator
+docker compose exec postgres psql -U combeanator -d combeanator
 ```
 
 **Kysely Documentation**: For detailed Kysely usage, see https://kysely.dev/llms-full.txt
@@ -307,9 +307,9 @@ module.exports = app;
 
 ### Services Won't Start
 ```bash
-docker-compose down
-docker-compose up -d
-docker-compose logs -f
+docker compose down
+docker compose up -d
+docker compose logs -f
 ```
 
 ### Permission Issues
@@ -324,8 +324,8 @@ id -g  # Your group ID
 sudo chown -R $USER:$USER .
 
 # Rebuild containers with correct user
-docker-compose down -v
-docker-compose up --build -d
+docker compose down -v
+docker compose up --build -d
 ```
 
 **Note:** The `UID` and `GID` variables in `.env` ensure Docker runs containers as your user, preventing root-owned files.
@@ -333,8 +333,8 @@ docker-compose up --build -d
 ### Database Connection Issues
 ```bash
 # Check PostgreSQL is running
-docker-compose ps
-docker-compose logs postgres
+docker compose ps
+docker compose logs postgres
 
 # Verify connection settings in backend/.env
 # Docker: POSTGRES_HOST=postgres
@@ -358,10 +358,10 @@ import logger from './logger'     // ✗ Wrong
 
 ### Reset Everything
 ```bash
-docker-compose down -v
+docker compose down -v
 docker volume prune -f
-docker-compose build --no-cache
-docker-compose up -d
+docker compose build --no-cache
+docker compose up -d
 ```
 
 ## Documentation
