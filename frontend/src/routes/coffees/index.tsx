@@ -1,12 +1,10 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import React from 'react';
+import type { ReactElement } from 'react';
 import z from 'zod';
 import { CoffeeCard } from '@/components/CoffeeCard';
 import { Pagination } from '@/components/Pagination';
 import { SearchBar } from '@/components/SearchBar';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
 import api from '@/lib/api';
 import type { Coffee } from '@/types/coffee';
@@ -22,11 +20,6 @@ async function getCoffees(params: GetCoffeesParams) {
 	return response.data;
 }
 
-async function createCoffee(payload: { name: string }) {
-	const response = await api.post<ApiResponse<Coffee>>('/coffees', payload);
-	return response.data;
-}
-
 async function deleteCoffee(coffeeId: number) {
 	const response = await api.delete<ApiResponse<void>>(`coffees/${coffeeId}`);
 	return response.data;
@@ -38,12 +31,12 @@ const searchParamsSchema = z.object({
 	q: z.string().catch(''),
 });
 
-export const Route = createFileRoute('/coffees')({
+export const Route = createFileRoute('/coffees/')({
 	validateSearch: searchParamsSchema,
 	component: Coffees,
 });
 
-function Coffees(): React.ReactElement {
+function Coffees(): ReactElement {
 	const { q, page, size } = Route.useSearch();
 	const navigate = useNavigate();
 	const queryClient = useQueryClient();
@@ -62,19 +55,16 @@ function Coffees(): React.ReactElement {
 		});
 	};
 
-	const [newCofee, setNewCoffee] = React.useState('');
+	const handleDetail = (coffeeId: number) => {
+		navigate({
+			to: `/coffees/${coffeeId}`,
+		});
+	};
 
 	const query = useQuery({
 		queryKey: ['coffees', q, page, size],
 		queryFn: () => getCoffees({ query: q, page, size }),
 		placeholderData: keepPreviousData,
-	});
-
-	const createMutation = useMutation({
-		mutationFn: createCoffee,
-		onSuccess: async () => {
-			await queryClient.invalidateQueries({ queryKey: ['coffees'] });
-		},
 	});
 
 	const deleteMutation = useMutation({
@@ -87,17 +77,6 @@ function Coffees(): React.ReactElement {
 	return (
 		<section className="bg-linear-to-b from-muted/50 to-background">
 			<div className="container mx-auto px-4">
-				<div className="flex gap-2 pt-12">
-					<Input
-						type="text"
-						placeholder="Add a coffee"
-						value={newCofee}
-						onChange={(e) => setNewCoffee(e.target.value)}
-						className="h-10 text-base"
-					/>
-					<Button onClick={() => createMutation.mutate({ name: newCofee })}>Add Coffee</Button>
-				</div>
-
 				<div className="py-12">
 					<SearchBar onSearch={handleSearch} initialQuery={q} />
 				</div>
@@ -118,6 +97,7 @@ function Coffees(): React.ReactElement {
 								<CoffeeCard
 									coffee={coffee}
 									handleDelete={() => deleteMutation.mutate(coffee.coffee_id)}
+									handleDetails={() => handleDetail(coffee.coffee_id)}
 								/>
 							</li>
 						))}
