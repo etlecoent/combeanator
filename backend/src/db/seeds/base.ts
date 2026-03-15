@@ -1,14 +1,35 @@
+import bcrypt from 'bcrypt';
 import type { Kysely } from 'kysely';
 
 // biome-ignore lint/suspicious/noExplicitAny: seeds should be frozen in time
 export async function seed(db: Kysely<any>): Promise<void> {
+	const passwordHash = await bcrypt.hash('password', 10);
+
 	// Seed users
 	await db
 		.insertInto('users')
 		.values([
-			{ first_name: 'John', last_name: 'Doe', email: 'john.doe@example.com', gender: 'man' },
-			{ first_name: 'Jane', last_name: 'Smith', email: 'jane.smith@example.com', gender: 'woman' },
-			{ first_name: 'Alex', last_name: 'Rider', email: 'alex.rider@example.com', gender: 'other' },
+			{
+				first_name: 'John',
+				last_name: 'Doe',
+				email: 'john.doe@example.com',
+				gender: 'man',
+				password_hash: passwordHash,
+			},
+			{
+				first_name: 'Jane',
+				last_name: 'Smith',
+				email: 'jane.smith@example.com',
+				gender: 'woman',
+				password_hash: passwordHash,
+			},
+			{
+				first_name: 'Alex',
+				last_name: 'Rider',
+				email: 'alex.rider@example.com',
+				gender: 'other',
+				password_hash: passwordHash,
+			},
 		])
 		.execute();
 

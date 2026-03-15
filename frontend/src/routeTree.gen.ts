@@ -10,14 +10,21 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as CoffeesIndexRouteImport } from './routes/coffees/index'
-import { Route as CoffeesNewRouteImport } from './routes/coffees/new'
-import { Route as CoffeesCoffeeIdRouteImport } from './routes/coffees/$coffeeId'
+import { Route as AuthenticationRegisterRouteImport } from './routes/authentication/register'
+import { Route as AuthenticationLoginRouteImport } from './routes/authentication/login'
+import { Route as AuthenticatedCoffeesIndexRouteImport } from './routes/_authenticated/coffees/index'
+import { Route as AuthenticatedCoffeesNewRouteImport } from './routes/_authenticated/coffees/new'
+import { Route as AuthenticatedCoffeesCoffeeIdRouteImport } from './routes/_authenticated/coffees/$coffeeId'
 
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -25,69 +32,100 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CoffeesIndexRoute = CoffeesIndexRouteImport.update({
-  id: '/coffees/',
-  path: '/coffees/',
+const AuthenticationRegisterRoute = AuthenticationRegisterRouteImport.update({
+  id: '/authentication/register',
+  path: '/authentication/register',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CoffeesNewRoute = CoffeesNewRouteImport.update({
+const AuthenticationLoginRoute = AuthenticationLoginRouteImport.update({
+  id: '/authentication/login',
+  path: '/authentication/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedCoffeesIndexRoute =
+  AuthenticatedCoffeesIndexRouteImport.update({
+    id: '/coffees/',
+    path: '/coffees/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedCoffeesNewRoute = AuthenticatedCoffeesNewRouteImport.update({
   id: '/coffees/new',
   path: '/coffees/new',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const CoffeesCoffeeIdRoute = CoffeesCoffeeIdRouteImport.update({
-  id: '/coffees/$coffeeId',
-  path: '/coffees/$coffeeId',
-  getParentRoute: () => rootRouteImport,
-} as any)
+const AuthenticatedCoffeesCoffeeIdRoute =
+  AuthenticatedCoffeesCoffeeIdRouteImport.update({
+    id: '/coffees/$coffeeId',
+    path: '/coffees/$coffeeId',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/coffees/$coffeeId': typeof CoffeesCoffeeIdRoute
-  '/coffees/new': typeof CoffeesNewRoute
-  '/coffees/': typeof CoffeesIndexRoute
+  '/authentication/login': typeof AuthenticationLoginRoute
+  '/authentication/register': typeof AuthenticationRegisterRoute
+  '/coffees/$coffeeId': typeof AuthenticatedCoffeesCoffeeIdRoute
+  '/coffees/new': typeof AuthenticatedCoffeesNewRoute
+  '/coffees/': typeof AuthenticatedCoffeesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/coffees/$coffeeId': typeof CoffeesCoffeeIdRoute
-  '/coffees/new': typeof CoffeesNewRoute
-  '/coffees': typeof CoffeesIndexRoute
+  '/authentication/login': typeof AuthenticationLoginRoute
+  '/authentication/register': typeof AuthenticationRegisterRoute
+  '/coffees/$coffeeId': typeof AuthenticatedCoffeesCoffeeIdRoute
+  '/coffees/new': typeof AuthenticatedCoffeesNewRoute
+  '/coffees': typeof AuthenticatedCoffeesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/about': typeof AboutRoute
-  '/coffees/$coffeeId': typeof CoffeesCoffeeIdRoute
-  '/coffees/new': typeof CoffeesNewRoute
-  '/coffees/': typeof CoffeesIndexRoute
+  '/authentication/login': typeof AuthenticationLoginRoute
+  '/authentication/register': typeof AuthenticationRegisterRoute
+  '/_authenticated/coffees/$coffeeId': typeof AuthenticatedCoffeesCoffeeIdRoute
+  '/_authenticated/coffees/new': typeof AuthenticatedCoffeesNewRoute
+  '/_authenticated/coffees/': typeof AuthenticatedCoffeesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/about'
+    | '/authentication/login'
+    | '/authentication/register'
     | '/coffees/$coffeeId'
     | '/coffees/new'
     | '/coffees/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/coffees/$coffeeId' | '/coffees/new' | '/coffees'
+  to:
+    | '/'
+    | '/about'
+    | '/authentication/login'
+    | '/authentication/register'
+    | '/coffees/$coffeeId'
+    | '/coffees/new'
+    | '/coffees'
   id:
     | '__root__'
     | '/'
+    | '/_authenticated'
     | '/about'
-    | '/coffees/$coffeeId'
-    | '/coffees/new'
-    | '/coffees/'
+    | '/authentication/login'
+    | '/authentication/register'
+    | '/_authenticated/coffees/$coffeeId'
+    | '/_authenticated/coffees/new'
+    | '/_authenticated/coffees/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AboutRoute: typeof AboutRoute
-  CoffeesCoffeeIdRoute: typeof CoffeesCoffeeIdRoute
-  CoffeesNewRoute: typeof CoffeesNewRoute
-  CoffeesIndexRoute: typeof CoffeesIndexRoute
+  AuthenticationLoginRoute: typeof AuthenticationLoginRoute
+  AuthenticationRegisterRoute: typeof AuthenticationRegisterRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -99,6 +137,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -106,36 +151,65 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/coffees/': {
-      id: '/coffees/'
+    '/authentication/register': {
+      id: '/authentication/register'
+      path: '/authentication/register'
+      fullPath: '/authentication/register'
+      preLoaderRoute: typeof AuthenticationRegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/authentication/login': {
+      id: '/authentication/login'
+      path: '/authentication/login'
+      fullPath: '/authentication/login'
+      preLoaderRoute: typeof AuthenticationLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/coffees/': {
+      id: '/_authenticated/coffees/'
       path: '/coffees'
       fullPath: '/coffees/'
-      preLoaderRoute: typeof CoffeesIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedCoffeesIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/coffees/new': {
-      id: '/coffees/new'
+    '/_authenticated/coffees/new': {
+      id: '/_authenticated/coffees/new'
       path: '/coffees/new'
       fullPath: '/coffees/new'
-      preLoaderRoute: typeof CoffeesNewRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedCoffeesNewRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/coffees/$coffeeId': {
-      id: '/coffees/$coffeeId'
+    '/_authenticated/coffees/$coffeeId': {
+      id: '/_authenticated/coffees/$coffeeId'
       path: '/coffees/$coffeeId'
       fullPath: '/coffees/$coffeeId'
-      preLoaderRoute: typeof CoffeesCoffeeIdRouteImport
-      parentRoute: typeof rootRouteImport
+      preLoaderRoute: typeof AuthenticatedCoffeesCoffeeIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedCoffeesCoffeeIdRoute: typeof AuthenticatedCoffeesCoffeeIdRoute
+  AuthenticatedCoffeesNewRoute: typeof AuthenticatedCoffeesNewRoute
+  AuthenticatedCoffeesIndexRoute: typeof AuthenticatedCoffeesIndexRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedCoffeesCoffeeIdRoute: AuthenticatedCoffeesCoffeeIdRoute,
+  AuthenticatedCoffeesNewRoute: AuthenticatedCoffeesNewRoute,
+  AuthenticatedCoffeesIndexRoute: AuthenticatedCoffeesIndexRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AboutRoute: AboutRoute,
-  CoffeesCoffeeIdRoute: CoffeesCoffeeIdRoute,
-  CoffeesNewRoute: CoffeesNewRoute,
-  CoffeesIndexRoute: CoffeesIndexRoute,
+  AuthenticationLoginRoute: AuthenticationLoginRoute,
+  AuthenticationRegisterRoute: AuthenticationRegisterRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

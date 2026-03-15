@@ -18,7 +18,7 @@ import type { Coffee } from '@/types/coffee';
 import type { ApiResponse } from '@/types/response';
 import type { Roaster } from '@/types/roaster';
 
-export const Route = createFileRoute('/coffees/new')({
+export const Route = createFileRoute('/_authenticated/coffees/new')({
 	component: RouteComponent,
 });
 

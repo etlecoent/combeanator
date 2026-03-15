@@ -31,7 +31,7 @@ const searchParamsSchema = z.object({
 	q: z.string().catch(''),
 });
 
-export const Route = createFileRoute('/coffees/')({
+export const Route = createFileRoute('/_authenticated/coffees/')({
 	validateSearch: searchParamsSchema,
 	component: Coffees,
 });

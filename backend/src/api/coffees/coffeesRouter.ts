@@ -13,20 +13,10 @@ import { sendSuccess } from '../../shared/utils/response.js';
 
 const coffeesRouter: Router = Router();
 
-// Schemas
 const searchQuerySchema = z.object({
 	query: z.string().trim().optional(),
 	page: z.coerce.number().positive(),
 	size: z.coerce.number().positive().min(10).max(10),
-});
-
-const createCoffeeSchema = z.object({
-	name: z.string().trim(),
-	roaster_id: z.number().positive(),
-});
-
-const coffeeIdSchema = z.object({
-	id: z.coerce.number(),
 });
 
 coffeesRouter.get(
@@ -55,6 +45,11 @@ coffeesRouter.get(
 	}
 );
 
+const createCoffeeSchema = z.object({
+	name: z.string().trim(),
+	roaster_id: z.number().positive(),
+});
+
 coffeesRouter.post(
 	'/',
 	validateBody(createCoffeeSchema),
@@ -79,14 +74,19 @@ coffeesRouter.post(
 			.values({ name, roaster_id })
 			.returning(['coffee_id', 'name', 'created_at'])
 			.executeTakeFirstOrThrow();
+
 		sendSuccess({ res, data: result });
 	}
 );
 
-coffeesRouter
-	.route('/:id')
-	.all(validateParams(coffeeIdSchema))
-	.get(async (_req: Request, res: ValidatedResponseLocals<typeof coffeeIdSchema>) => {
+const coffeeIdSchema = z.object({
+	id: z.coerce.number(),
+});
+coffeesRouter.route('/:id').all(validateParams(coffeeIdSchema));
+
+coffeesRouter.get(
+	'/:id',
+	async (_req: Request, res: ValidatedResponseLocals<typeof coffeeIdSchema>) => {
 		const { id } = res.locals.params;
 		const coffee = await db
 			.selectFrom('coffees')
@@ -94,18 +94,19 @@ coffeesRouter
 			.where('coffee_id', '=', id)
 			.executeTakeFirst();
 		if (!coffee) throw new NotFoundError();
+
 		sendSuccess({ res, data: coffee });
-	})
-	// .put(validateBody(updateCoffeeSchema), async (req, res, next) => {
-	//   const { id } = res.locals.params;
-	//   const payload = res.locals.body;
-	//   ...
-	// })
-	.delete(async (_req: Request, res: ValidatedResponseLocals<typeof coffeeIdSchema>) => {
+	}
+);
+coffeesRouter.delete(
+	'/:id',
+	async (_req: Request, res: ValidatedResponseLocals<typeof coffeeIdSchema>) => {
 		const { id } = res.locals.params;
 		const deleteResult = await db.deleteFrom('coffees').where('coffee_id', '=', id).execute();
 		if (deleteResult.length === 0) throw new NotFoundError();
+
 		sendSuccess({ res, data: null, statusCode: 204 });
-	});
+	}
+);
 
 export default coffeesRouter;
