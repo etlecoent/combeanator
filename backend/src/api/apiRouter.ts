@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import authenticationMiddleware from '../shared/middlewares/authenticationMiddleware.js';
-import authRouter from './auth/authRouter.js';
+import authenticationRouter from './authentication/authenticationRouter.js';
 import coffeesRouter from './coffees/coffeesRouter.js';
 import healthRouter from './health/healthRouter.js';
 import roastersRouter from './roasters/roastersRouter.js';
@@ -10,7 +10,7 @@ const apiRouter: Router = Router();
 
 // Public routes
 apiRouter.use('/health', healthRouter);
-apiRouter.use('/auth', authRouter);
+apiRouter.use('/authentication', authenticationRouter);
 
 // Protected routes
 apiRouter.use(authenticationMiddleware);

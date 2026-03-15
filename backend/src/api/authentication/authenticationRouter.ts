@@ -12,14 +12,14 @@ import {
 } from '../../shared/middlewares/validateMiddleware.js';
 import { sendSuccess } from '../../shared/utils/response.js';
 
-const authRouter: Router = Router();
+const authenticationRouter: Router = Router();
 
 const loginSchema = z.object({
 	email: z.string().email(),
 	password: z.string(),
 });
 
-authRouter.post(
+authenticationRouter.post(
 	'/login',
 	validateBody(loginSchema),
 	async (_req: Request, res: ValidatedResponseLocals<unknown, unknown, typeof loginSchema>) => {
@@ -44,4 +44,4 @@ authRouter.post(
 	}
 );
 
-export default authRouter;
+export default authenticationRouter;
