@@ -3,14 +3,15 @@ import jwt from 'jsonwebtoken';
 import ENV from '../../config.js';
 import { UnauthorizedError } from '../errors/AppError.js';
 
-const auhenticationMiddleWare = (req: Request, _res: Response, next: NextFunction) => {
+const authenticationMiddleware = (req: Request, _res: Response, next: NextFunction) => {
 	const { authorization } = req.headers;
+	const token = authorization?.startsWith('Bearer ') ? authorization.slice(7) : '';
 
-	jwt.verify(authorization || '', ENV.JWT_SECRET, (err, _decoded) => {
+	jwt.verify(token, ENV.JWT_SECRET, (err, _decoded) => {
 		if (err?.name === 'TokenExpiredError') next(new UnauthorizedError('Expired Token'));
 		else if (err) next(new UnauthorizedError('Invalid token'));
 		else next();
 	});
 };
 
-export default auhenticationMiddleWare;
+export default authenticationMiddleware;

@@ -13,6 +13,7 @@ export async function up(db: Kysely<any>): Promise<void> {
 		.addColumn('first_name', 'varchar(255)', (col) => col.notNull())
 		.addColumn('last_name', 'varchar(255)', (col) => col.notNull())
 		.addColumn('email', 'varchar(255)', (col) => col.unique().notNull())
+		.addColumn('password_hash', 'varchar(255)', (col) => col.notNull())
 		.addColumn('gender', 'varchar(10)', (col) =>
 			col.notNull().check(sql`gender IN ('man', 'woman', 'other')`)
 		)

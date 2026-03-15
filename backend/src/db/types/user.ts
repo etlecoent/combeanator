@@ -9,6 +9,7 @@ export type UsersTable = {
 	last_name: string;
 	gender: 'man' | 'woman' | 'other';
 	email: string;
+	password_hash: string;
 };
 export type User = Selectable<UsersTable>;
 export type CreateUser = Insertable<UsersTable>;
