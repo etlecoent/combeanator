@@ -24,9 +24,7 @@ cp example.env .env
 cp frontend/example.env frontend/.env
 cp backend/example.env backend/.env
 
-# Set your user ID in .env to prevent root ownership in Docker
-sed -i "s/UID=1000/UID=$(id -u)/" .env
-sed -i "s/GID=1000/GID=$(id -g)/" .env
+
 ```
 
 ### 2. Choose Your Development Method
@@ -311,24 +309,6 @@ docker compose down
 docker compose up -d
 docker compose logs -f
 ```
-
-### Permission Issues
-If you get permission errors or files are owned by root:
-```bash
-# Ensure UID/GID is set in root .env file
-id -u  # Your user ID
-id -g  # Your group ID
-# Add these values to .env file
-
-# Fix ownership of existing files
-sudo chown -R $USER:$USER .
-
-# Rebuild containers with correct user
-docker compose down -v
-docker compose up --build -d
-```
-
-**Note:** The `UID` and `GID` variables in `.env` ensure Docker runs containers as your user, preventing root-owned files.
 
 ### Database Connection Issues
 ```bash
