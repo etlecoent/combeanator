@@ -8,6 +8,7 @@ import ENV from './config.js';
 import { db } from './db/connection.js';
 import logger from './shared/logger.js';
 // Middlewares
+import auhenticationMiddleWare from './shared/middlewares/authenticationMiddleware.js';
 import errorMiddleware from './shared/middlewares/errorMiddleware.js';
 import loggerMiddleware from './shared/middlewares/loggerMiddleware.js';
 import notFoundMiddleWare from './shared/middlewares/notFoundMiddleware.js';
@@ -24,6 +25,7 @@ app.use(cors());
 app.use(express.json());
 app.use(loggerMiddleware);
 
+app.use(auhenticationMiddleWare);
 app.use('/api', apiRouter);
 
 // Not found middleware

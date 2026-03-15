@@ -6,6 +6,10 @@ const envSchema = z.object({
 	NODE_ENV: z.enum(['development', 'production', 'test']),
 	PORT: z.coerce.number().positive().int(),
 
+	// JWT Configuration
+	JWT_SECRET: z.string().min(1),
+	JWT_EXPIRES_IN_SECONDS: z.coerce.number().positive(),
+
 	// Database Configuration
 	POSTGRES_HOST: z.string().min(1),
 	POSTGRES_PORT: z.coerce.number().positive().int(),
