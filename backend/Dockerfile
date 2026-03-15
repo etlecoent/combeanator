@@ -5,9 +5,12 @@ COPY package*.json ./
 
 # Development stage
 FROM base AS development
-RUN npm install
+RUN apk add --no-cache su-exec && npm install
 COPY . .
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 EXPOSE 5000
+ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["npm", "run", "dev"]
 
 # Build stage
