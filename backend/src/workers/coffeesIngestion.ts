@@ -9,6 +9,7 @@ const logger = rootLogger.child({ name: 'coffeesIngestion' });
 const coffeeIngestV1Schema = z.object({
 	name: z.string().trim(),
 	roaster: z.string().trim(),
+	description: z.string().trim().optional(),
 });
 type CoffeeIngestV1 = z.infer<typeof coffeeIngestV1Schema>;
 
@@ -49,7 +50,7 @@ const upsertRoaster = async (roaster: UpsertRoasterInput) => {
 
 	return dbRoaster;
 };
-type UpsertCoffeeInput = { name: string; roaster_id: number };
+type UpsertCoffeeInput = { name: string; roaster_id: number; description?: string };
 const upsertCoffee = async (coffee: UpsertCoffeeInput) => {
 	logger.info({ coffee }, 'Upserting coffee');
 
@@ -66,7 +67,7 @@ const upsertCoffee = async (coffee: UpsertCoffeeInput) => {
 	} else {
 		const [updatedCoffee] = await db
 			.updateTable('coffees')
-			.set({ name: coffee.name, updated_at: new Date() })
+			.set({ name: coffee.name, description: coffee.description, updated_at: new Date() })
 			.where('coffee_id', '=', dbCoffee.coffee_id)
 			.returningAll()
 			.execute();
@@ -100,7 +101,11 @@ const processRawCoffee = async (rawCoffee: string) => {
 		return;
 	}
 	try {
-		await upsertCoffee({ name: coffee.name, roaster_id: roasterId });
+		await upsertCoffee({
+			name: coffee.name,
+			roaster_id: roasterId,
+			description: coffee.description,
+		});
 	} catch (err) {
 		logger.error({ err, coffee }, 'Error inserting/updating coffee in database');
 	}
