@@ -1,4 +1,4 @@
-import { createContext, type ReactNode, useContext, useState } from 'react';
+import { createContext, type ReactNode, useContext, useEffect, useState } from 'react';
 import api from '@/lib/api';
 import type { ApiResponse } from '@/types/response';
 
@@ -27,6 +27,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 		localStorage.removeItem('token');
 		setIsAuthenticated(false);
 	}
+
+	useEffect(() => {
+		const interceptor = api.interceptors.response.use(
+			(response) => response,
+			(error) => {
+				if (error.response?.status === 401) {
+					logout();
+					window.location.href = '/authentication/login';
+				}
+				return Promise.reject(error);
+			}
+		);
+		return () => api.interceptors.response.eject(interceptor);
+	}, []);
 
 	return (
 		<AuthContext.Provider value={{ isAuthenticated, login, logout }}>
