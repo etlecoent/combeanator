@@ -20,8 +20,8 @@ def extract(conn: psycopg.Connection) -> list[dict]:
                 producer,
                 altitude,
                 variety,
-                tasting_notes,
-                recommended_brew 
+                description,
+                recommended_brew
             
             FROM silver_coffees 
             

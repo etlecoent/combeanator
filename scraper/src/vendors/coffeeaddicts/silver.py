@@ -1,8 +1,23 @@
+import re
 import uuid
 
 import psycopg
+from bs4 import BeautifulSoup
 
 from .config import VENDOR
+
+_DESCRIPTION_SECTION_RE = re.compile(
+    r"<!-- Product Description -->(.*?)<!-- Staff Quote -->",
+    re.DOTALL,
+)
+
+
+def _extract_description(body_html: str) -> str | None:
+    match = _DESCRIPTION_SECTION_RE.search(body_html)
+    if not match:
+        return None
+    text = BeautifulSoup(match.group(1), "html.parser").get_text(separator=" ").strip()
+    return text or None
 
 
 def _extract_tag(tags: list[str], prefix: str) -> list[str]:
@@ -29,8 +44,8 @@ def _transform_row(row: dict) -> dict:
         "producer": _extract_tag(tags, "producer"),
         "altitude": _extract_tag(tags, "altitude"),
         "variety": _extract_tag(tags, "variety"),
-        "tasting_notes": _extract_tag(tags, "tasting notes"),
         "recommended_brew": _extract_tag(tags, "brew"),
+        "description": _extract_description(raw.get("body_html", "")),
     }
 
 
@@ -64,8 +79,8 @@ def load(conn: psycopg.Connection, items: list[dict]) -> None:
             "producer": item["producer"][0] if item["producer"] else None,
             "altitude": item["altitude"][0] if item["altitude"] else None,
             "variety": item["variety"],
-            "tasting_notes": item["tasting_notes"],
             "recommended_brew": item["recommended_brew"],
+            "description": item["description"],
         }
         for item in items
     ]
@@ -75,11 +90,11 @@ def load(conn: psycopg.Connection, items: list[dict]) -> None:
             """
             INSERT INTO silver_coffees (
                 id, bronze_coffees_id, name, vendor, roaster,
-                origin, process, roast_level, producer, altitude, variety, tasting_notes, recommended_brew
+                origin, process, roast_level, producer, altitude, variety, recommended_brew, description
             ) VALUES (
                 %(id)s, %(bronze_coffees_id)s, %(name)s, %(vendor)s, %(roaster)s,
                 %(origin)s, %(process)s, %(roast_level)s, %(producer)s,
-                %(altitude)s, %(variety)s, %(tasting_notes)s, %(recommended_brew)s
+                %(altitude)s, %(variety)s, %(recommended_brew)s, %(description)s
             )
             """,
             prepared_items,
