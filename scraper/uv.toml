@@ -1,0 +1,8 @@
+# Skip building from source distributions — prevents arbitrary code execution from build
+# scripts (setup.py, etc.) of a compromised package during install. uv uses pre-built
+# wheels by default; this enforces it strictly.
+no-build = true
+
+# Ignore packages published less than 7 days ago — reduces risk of installing corrupted
+# or malicious packages that haven't been vetted by the community yet.
+exclude-newer = "7 days"
