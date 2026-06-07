@@ -1,6 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
-import type { AxiosError } from 'axios';
 import type { ReactElement } from 'react';
 import { useState } from 'react';
 import { z } from 'zod';
@@ -8,6 +7,7 @@ import { useAuth } from '@/auth';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { getErrorMessage } from '@/lib/api/errors';
 
 const loginSchema = z.object({
 	email: z.string().email('Invalid email'),
@@ -30,6 +30,7 @@ function RouteComponent(): ReactElement {
 
 	const mutation = useMutation({
 		mutationFn: () => auth.login(email, password),
+		meta: { skipGlobalErrorToast: true },
 		onSuccess: () => {
 			navigate({ to: '/' });
 		},
@@ -58,10 +59,7 @@ function RouteComponent(): ReactElement {
 		mutation.mutate();
 	}
 
-	const serverError = mutation.isError
-		? ((mutation.error as AxiosError<{ message: string }>).response?.data?.message ??
-			mutation.error.message)
-		: null;
+	const serverError = mutation.isError ? getErrorMessage(mutation.error) : null;
 
 	return (
 		<div className="min-h-screen flex items-center justify-center p-4">

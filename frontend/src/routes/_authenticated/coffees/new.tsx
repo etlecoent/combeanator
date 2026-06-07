@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/combobox';
 import { Input } from '@/components/ui/input';
 import { Spinner } from '@/components/ui/spinner';
-import api from '@/lib/api';
+import api from '@/lib/api/client';
 import type { Coffee } from '@/types/coffee';
 import type { ApiResponse } from '@/types/response';
 import type { Roaster } from '@/types/roaster';
@@ -100,10 +100,6 @@ function RouteComponent(): ReactElement {
 						<div className="py-12 flex items-center justify-center">
 							<Spinner className="size-8" />
 						</div>
-					)}
-
-					{createMutation.isError && (
-						<div className="py-12 text-center text-red-600">{createMutation.error.message}</div>
 					)}
 				</div>
 			</div>

@@ -3,6 +3,11 @@ export type ApiResponse<T> = {
 	data: T;
 };
 
+export type ApiErrorResponse = {
+	success: false;
+	error: { message: string; code?: string };
+};
+
 export type Pagination = {
 	page: number;
 	total: number;

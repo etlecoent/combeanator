@@ -3,6 +3,7 @@ import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 import type { AuthState } from '@/auth';
 import { Footer } from '@/components/Footer';
 import { NavBar } from '@/components/NavBar';
+import { Toaster } from '@/components/ui/sonner';
 
 type RouterContext = {
 	auth: AuthState;
@@ -19,6 +20,7 @@ const RootLayout = () => (
 			<TanStackRouterDevtools />
 		</div>
 		<Footer />
+		<Toaster />
 	</>
 );
 

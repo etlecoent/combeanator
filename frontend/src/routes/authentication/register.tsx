@@ -1,6 +1,5 @@
 import { useMutation } from '@tanstack/react-query';
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
-import type { AxiosError } from 'axios';
 import type { ReactElement } from 'react';
 import { useState } from 'react';
 import { z } from 'zod';
@@ -15,7 +14,8 @@ import {
 	ComboboxList,
 } from '@/components/ui/combobox';
 import { Input } from '@/components/ui/input';
-import api from '@/lib/api';
+import api from '@/lib/api/client';
+import { getErrorMessage } from '@/lib/api/errors';
 import type { ApiResponse } from '@/types/response';
 
 type GenderOption = { value: 'man' | 'woman' | 'other'; label: string };
@@ -69,6 +69,7 @@ function RouteComponent(): ReactElement {
 
 	const mutation = useMutation({
 		mutationFn: register,
+		meta: { skipGlobalErrorToast: true },
 		onSuccess: () => {
 			navigate({ to: '/authentication/login' });
 		},
@@ -104,10 +105,7 @@ function RouteComponent(): ReactElement {
 		mutation.mutate(result.data);
 	}
 
-	const serverError = mutation.isError
-		? ((mutation.error as AxiosError<{ message: string }>).response?.data?.message ??
-			mutation.error.message)
-		: null;
+	const serverError = mutation.isError ? getErrorMessage(mutation.error) : null;
 
 	return (
 		<div className="min-h-screen flex items-center justify-center p-4">

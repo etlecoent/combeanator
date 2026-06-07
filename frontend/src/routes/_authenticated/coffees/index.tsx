@@ -6,7 +6,8 @@ import { CoffeeCard } from '@/components/CoffeeCard';
 import { Pagination } from '@/components/Pagination';
 import { SearchBar } from '@/components/SearchBar';
 import { Spinner } from '@/components/ui/spinner';
-import api from '@/lib/api';
+import api from '@/lib/api/client';
+import { getErrorMessage } from '@/lib/api/errors';
 import type { Coffee } from '@/types/coffee';
 import type { ApiResponse, PaginatedApiResponse } from '@/types/response';
 
@@ -85,7 +86,9 @@ function Coffees(): ReactElement {
 						<Spinner className="size-8" />
 					</div>
 				)}
-				{query.isError && <div className="py-12 text-center text-red-600">Error</div>}
+				{query.isError && (
+					<div className="py-12 text-center text-destructive">{getErrorMessage(query.error)}</div>
+				)}
 				{query.isSuccess && query.data.data.length === 0 && (
 					<div className="py-12 text-center">No coffees found</div>
 				)}
